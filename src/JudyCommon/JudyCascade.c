@@ -28,7 +28,7 @@
 extern int j__udyCreateBranchL(Pjp_t, Pjp_t, uint8_t *, Word_t, Pvoid_t);
 extern int j__udyCreateBranchB(Pjp_t, Pjp_t, uint8_t *, Word_t, Pvoid_t);
 
-DBGCODE(extern void JudyCheckSorted(Pjll_t Pjll, Word_t Pop1, long IndexSize);)
+DBGCODE(extern void JudyCheckSorted(Pjll_t Pjll, Word_t Pop1, intptr_t IndexSize);)
 
 static const jbb_t StageJBBZero;	// zeroed versions of namesake struct.
 

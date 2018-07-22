@@ -1,0 +1,178 @@
+исправлено так чтбы компилировалось на Linux/Windows одинаково
+
+
+лонг!
+DBGCODE(extern void JudyCheckSorted(Pjll_t Pjll, Word_t Pop1, long IndexSize);)
+
+./src/JudyCommon/JudyCount.c:       long   subexp;     
+./src/JudyCommon/JudyCount.c:       long   findsub;    
+./src/JudyCommon/JudyCount.c:           long jpcountbf;
+
+
+unsigned long long -> uintptr_t
+unsigned long      -> uintptr_t
+%08lx,%0lx,%10lu,%11lu,%12lu,%3lu,%5lu,%7lu,%8lu,%9lu,%ld,%lu,%lx -> PRIiPTR,PRIuPTR,PRIxPTR
+
+1UL | 0xAFL -> ((Word_t)$1)
+
+везде где фажно 0xAF09 преревел в ((Word_t)0xAF09)
+руками
+
+
+
+ 
+
+perl -pi -e 's/\%(\d*)l([diux])/%$1\"PRI$2PTR\"/g'
+find . -name '*.c' -o -name '*.h'|xargs grep --color -P '\%\d*l[diux]+'
+
+
+
+find . -name '*.c' -o -name '*.h'|xargs grep -l -r -P '0x[A-Fa-f0-9]+|\d+U?L' > wrong_wide_format.txt
+cat wrong_wide_format.txt | xargs perl -p -i -e 's/\b((0x[A-Fa-f0-9]+)|(\d+))U?L\b/\(\(Word_t\)$1\)/g'
+
+
+perl -p -i -e 's/\slong\s/ intptr_t /g'
+
+
+
+!!очень много инферсий ~
+проверить может из-за такой конструкции что-то будет нетак
+
+
+	
+!чтобы собрать проект другим компилятором надо:
+CC=gcc ./configure
+CC=clang ./configure	
+
+
+посмотреть еще вот это - Hash Array Mapped Trie (HAMT) implementation
+https://github.com/yasm/yasm/blob/master/libyasm/hamt.c
+
+
+	
+	
+	
+надо вот так
+judy-1.0.5\src\Judy.h
+typedef uintptr_t    Word_t, * PWord_t;
+плюс компитярор говорит про сдвиги за пределы типа (в 2-3 местах, там нужно приведение 0x1 -> (Word_t)0x1 )
+
+
+
+А проблема в таких вот конструкциях:
+judy-1.0.5\src\JudyCommon\JudyPrivate.h	
+//#define cJU_ALLONES  (~0UL)
+#define cJU_ALLONES  ( ~(  (Word_t)0  )   )
+
+
+Word_t W=0;
+printf("Word_t=0 %llu\n",W);
+W=(~0);
+printf("Word_t=~0 %llu\n",W);
+W=(~0UL);
+printf("Word_t=~0UL %llu\n",W);
+W=(~0ULL);
+printf("Word_t=~0ULL %llu\n",W);
+W=(~((Word_t)0));
+printf("Word_t=(Word_t)~0 %llu\n",W);
+
+
+Word_t=0 0
+Word_t=~0 18446744073709551615
+Word_t=~0UL 4294967295
+Word_t=~0ULL 18446744073709551615
+Word_t=(Word_t)~0 18446744073709551615
+
+
+ВАУ! UL - только все портит!
+
+
+и там их тьма!
+src/apps/demo/funhist.c:    histo_incr = ((Word_t)~0L / DEFAULT_HISTO_BUCKETS) >> 1;
+src/apps/demo/funhist.c:    Index = ~0;
+src/Judy.h:// (~0UL), to avoid a compiler "overflow in implicit constant conversion"
+src/Judy.h:#define  PJERR ((Pvoid_t)  (~0UL))      /* mainly for use here, see below    */
+src/Judy.h:#define PPJERR ((PPvoid_t) (~0UL))      /* functions that return PPvoid_t    */
+src/JudyCommon/JudyByCount.c:// Convert Count to Count0; assume special case of Count = 0 maps to ~0, as
+src/JudyCommon/JudyByCount.c:   assert((Count || Count0 == ~0));  // ensure CPU is sane about 0 - 1.
+src/JudyCommon/JudyIns.c:// during insert (~70nS) because a pipelined processor does not need to "stall"
+src/JudyCommon/JudyMallocIF.c:Word_t j__uMaxWords = ~0UL;
+src/JudyCommon/JudyPrevNext.c:  offset = ((JU_JPDCDPOP0(Pjp) <  JU_TRIMTODCDSIZE(*PIndex)) ? ~1 : \
+src/JudyCommon/JudyPrevNext.c:                                                               ~0); \
+src/JudyCommon/JudyPrivate.h:// A Linear branch has a ~1.75 cache line fill cost when at maximum population.
+src/JudyCommon/JudyPrivate.h:// A Bitmap branch has ~2.0 cache line fills.  Linear and Bitmap branches are
+src/JudyCommon/JudyPrivate.h:// (~31..255 Indexes).  A maximum-population Leaf has ~1.5 cache line fill
+src/JudyCommon/JudyPrivate.h:// A word that is all-ones, normally equal to -1UL, but safer with ~0:
+src/JudyCommon/JudyPrivate.h://#define cJU_ALLONES  (~0UL)
+src/JudyCommon/JudyPrivate.h:#define JU_SETDIGIT1(INDEX,DIGIT) (INDEX) = ((INDEX) & ~0xff) | (DIGIT)
+src/JudyCommon/JudyPrivate.h:// callers which compare int Foo() to (Word_t) JERR (~0UL) are OK, since JERRI
+src/JudyCommon/JudyPrivate.h:#define JERRI ((int) ~0)                // see above.
+src/JudyCommon/JudyPrivateBranch.h:// (~512 words) allocation.
+src/JudyL/JudyLByCount.c:// Convert Count to Count0; assume special case of Count = 0 maps to ~0, as
+src/JudyL/JudyLByCount.c:       assert((Count || Count0 == ~0));  // ensure CPU is sane about 0 - 1.
+src/JudyL/JudyLIns.c:// during insert (~70nS) because a pipelined processor does not need to "stall"
+src/JudyL/JudyLMallocIF.c:Word_t j__uMaxWords = ~0UL;
+src/JudyL/JudyLNext.c:  offset = ((JU_JPDCDPOP0(Pjp) <  JU_TRIMTODCDSIZE(*PIndex)) ? ~1 : \
+src/JudyL/JudyLNext.c:                                                               ~0); \
+src/JudyL/JudyLPrev.c:  offset = ((JU_JPDCDPOP0(Pjp) <  JU_TRIMTODCDSIZE(*PIndex)) ? ~1 : \
+src/JudyL/JudyLPrev.c:                                                               ~0); \
+
+
+
+проблемный макрос - констнта cJU_ALLONES в два раза меньше чем надо, а она используется как индеск
+
+SEARCHLEAFNATIVE(uint64_t, Pjlw, LeafPop1, Index);
+#define SEARCHLEAFNATIVE(uint64_t,Pjlw,POP1,Index)              
+    uint64_t *P_leaf = (uint64_t *)(Pjlw);                      
+    uint64_t I_ndex = (uint64_t)Index; /* truncate hi bits */   
+    Word_t   l_ow   = cJU_ALLONES;                              
+    Word_t   m_id;                                              
+    Word_t   h_igh  = POP1;                                     
+                                                                
+    while ((h_igh - l_ow) > 1UL)                                
+    {                                                           
+        m_id = (h_igh + l_ow) / 2;                              
+        if (P_leaf[m_id] > I_ndex)                              
+            h_igh = m_id;                                       
+        else                                                    
+            l_ow = m_id;                                        
+    }                                                           
+    if (l_ow == cJU_ALLONES || P_leaf[l_ow] != I_ndex)          
+        return(~h_igh);                                         
+    return(l_ow)
+	
+
+еще сть место, где печатаются таблицы (кодогенерация?)
+JudyLTablesGen.c:263:39: warning: format specifies type 'long' but the argument has type 'Word_t' (aka 'unsigned long long') [-Wformat]
+    fprintf(fd," Leaf1 = %ld\";\n\n", (Word_t)cJL_LEAF1_MAXPOP1);
+                         ~~~          ^~~~~~~~~~~~~~~~~~~~~~~~~
+                         %llu	
+для платформонезависимой печати есть размер void* и печатается он через PRIiPTR в зависимости от битности системы
+						 
+#ifdef _WIN64
+#define PRIiPTR "I64i"
+#define PRIuPTR "I64u"
+#define PRIxPTR "I64x"
+#else
+#define PRIiPTR "i"
+#define PRIuPTR "u"
+#define PRIxPTR "x"
+#endif
+	
+	
+	
+найти все константы с постфиксом U UL L (не ищет вида 0xFF)
+find . -name '*.h' -o -name '*.c' | xargs grep -r -P --color '[^\d]\d+[UL]+'
+	
+	
+	
+	
+	
+	End   18446744073709551614
+Trouble at 675737071
+
+End   18446744073709551614
+Trouble at 749802543
+
+749802543
+4294967295

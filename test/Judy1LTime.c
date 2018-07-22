@@ -123,9 +123,9 @@ char     *malStart;
 // Common macro to handle a failure
 #define FAILURE(STR, UL)                                                \
 {                                                                       \
-printf(         "Error: %s %lu, file='%s', 'function='%s', line %d\n",  \
+printf(         "Error: %s %"PRIuPTR", file='%s', 'function='%s', line %d\n",  \
         STR, UL, __FILE__, __FUNCTI0N__, __LINE__);                     \
-fprintf(stderr, "Error: %s %lu, file='%s', 'function='%s', line %d\n",  \
+fprintf(stderr, "Error: %s %"PRIuPTR", file='%s', 'function='%s', line %d\n",  \
         STR, UL, __FILE__, __FUNCTI0N__, __LINE__);                     \
         exit(1);                                                        \
 }
@@ -286,7 +286,7 @@ Word_t    ErrorFlag = 0;
 Word_t    PtsPdec = 40;         // measurement points per decade
 
 // Stuff for LFSR (pseudo random number generator)
-Word_t    RandomBit = ~0UL / 2 + 1;
+Word_t    RandomBit = ~((Word_t)0) / 2 + 1;
 Word_t    BValue = sizeof(Word_t) * 8;
 Word_t    Magic;
 
@@ -391,7 +391,7 @@ main(int argc, char *argv[])
                 (MagicList[BValue] == 0) || (BValue > (sizeof(Word_t) * 8)))
             {
                 ErrorFlag++;
-                printf("\nIllegal number of random bits of %lu !!!\n",
+                printf("\nIllegal number of random bits of %"PRIuPTR" !!!\n",
                        BValue);
             }
             break;
@@ -465,18 +465,18 @@ main(int argc, char *argv[])
         JLFlag = J1Flag = 1;
 
 //  Set number of Random bits in LFSR
-    RandomBit = 1UL << (BValue - 1);
+    RandomBit = ((Word_t)1) << (BValue - 1);
     Magic = MagicList[BValue];
 
     if (nElms > ((RandomBit - 2) * 2))
     {
         printf
-            ("# Number = -n%lu of Indexes reduced to max expanse of Random numbers\n",
+            ("# Number = -n%"PRIuPTR" of Indexes reduced to max expanse of Random numbers\n",
              nElms);
         nElms = ((RandomBit - 2) * 2);
     }
 
-    printf("# TITLE %s -n%lu -S%lu -T%lu -B%lu -P%lu",
+    printf("# TITLE %s -n%"PRIuPTR" -S%"PRIuPTR" -T%"PRIuPTR" -B%"PRIuPTR" -P%"PRIuPTR"",
            argv[0], nElms, SkipN, TValues, BValue, PtsPdec);
     if (J1Flag)
         printf(" -1");
@@ -637,7 +637,7 @@ main(int argc, char *argv[])
         if (TValues)
             Meas = (Pop1 < TValues) ? Pop1 : TValues;
 
-        printf("%10lu %9lu", Pop1, Meas);
+        printf("%10"PRIuPTR" %9"PRIuPTR"", Pop1, Meas);
         printf(" %6.3f", DeltaUSec1);
         printf(" %6.3f", DeltaUSecL);
 
@@ -729,7 +729,7 @@ main(int argc, char *argv[])
         ENDTm(DeltaUSec1, tm1);
         DeltaUSec1 /= (double)Count1;
 
-        printf("# Judy1FreeArray: %lu, %0.3f bytes/Index, %0.3f USec/Index\n",
+        printf("# Judy1FreeArray: %"PRIuPTR", %0.3f bytes/Index, %0.3f USec/Index\n",
                Count1, (double)Bytes / (double)Count1, DeltaUSec1);
     }
 
@@ -740,7 +740,7 @@ main(int argc, char *argv[])
         ENDTm(DeltaUSecL, tm1);
         DeltaUSecL /= (double)CountL;
 
-        printf("# JudyLFreeArray: %lu, %0.3f bytes/Index, %0.3f USec/Index\n",
+        printf("# JudyLFreeArray: %"PRIuPTR", %0.3f bytes/Index, %0.3f USec/Index\n",
                CountL, (double)Bytes / (double)CountL, DeltaUSecL);
     }
     exit(0);
@@ -885,7 +885,7 @@ Word_t
 TestJudyDup(void **J1, void **JL, Word_t Seed, Word_t Elements)
 {
     TIMER_vars(tm1);            // declare timer variables
-    Word_t    LowIndex = ~0UL;
+    Word_t    LowIndex = ~((Word_t)0);
     Word_t    TstIndex;
     Word_t    elm;
     Word_t   *PValue;
@@ -901,7 +901,7 @@ TestJudyDup(void **J1, void **JL, Word_t Seed, Word_t Elements)
 
     if (J1Flag)
     {
-        LowIndex = ~0UL;
+        LowIndex = ~((Word_t)0);
         for (DDel = 1e40, icnt = ICNT, lp = 0; lp < Loops; lp++)
         {
             STARTTm(tm1);
@@ -941,7 +941,7 @@ TestJudyDup(void **J1, void **JL, Word_t Seed, Word_t Elements)
 
     if (JLFlag)
     {
-        LowIndex = ~0UL;
+        LowIndex = ~((Word_t)0);
         for (DDel = 1e40, lp = 0; lp < Loops; lp++)
         {
             STARTTm(tm1);
@@ -959,7 +959,7 @@ TestJudyDup(void **J1, void **JL, Word_t Seed, Word_t Elements)
 
                 JLI(PValue, *JL, TstIndex);
                 if (PValue == (Word_t *)NULL)
-                    FAILURE("JudyLGet ret PValue = NULL", 0L);
+                    FAILURE("JudyLGet ret PValue = NULL", ((Word_t)0));
                 if (*PValue != TstIndex)
                     FAILURE("JudyLGet ret wrong Value at", elm);
             }
@@ -989,7 +989,7 @@ Word_t
 TestJudyGet(void *J1, void *JL, Word_t Seed, Word_t Elements)
 {
     TIMER_vars(tm1);            // declare timer variables
-    Word_t    LowIndex = ~0UL;
+    Word_t    LowIndex = ~((Word_t)0);
     Word_t    TstIndex;
     Word_t    elm;
     Word_t   *PValue;
@@ -1005,7 +1005,7 @@ TestJudyGet(void *J1, void *JL, Word_t Seed, Word_t Elements)
 
     if (J1Flag)
     {
-        LowIndex = ~0UL;
+        LowIndex = ~((Word_t)0);
         for (DDel = 1e40, icnt = ICNT, lp = 0; lp < Loops; lp++)
         {
             STARTTm(tm1);
@@ -1045,7 +1045,7 @@ TestJudyGet(void *J1, void *JL, Word_t Seed, Word_t Elements)
 
     if (JLFlag)
     {
-        LowIndex = ~0UL;
+        LowIndex = ~((Word_t)0);
         for (DDel = 1e40, lp = 0; lp < Loops; lp++)
         {
             STARTTm(tm1);
@@ -1063,7 +1063,7 @@ TestJudyGet(void *J1, void *JL, Word_t Seed, Word_t Elements)
 
                 JLG(PValue, JL, TstIndex);
                 if (PValue == (Word_t *)NULL)
-                    FAILURE("JudyLGet ret PValue = NULL", 0L);
+                    FAILURE("JudyLGet ret PValue = NULL", ((Word_t)0));
                 if (*PValue != TstIndex)
                     FAILURE("JudyLGet ret wrong Value at", elm);
             }

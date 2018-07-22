@@ -104,7 +104,7 @@ void dummy() {}	 // avoid "empty source file" warnings when no _TIMEIT_TEST.
 int main(int argc, char **argv)
 {
 	int     i = 0;		// loop index.
-	long    i_max = 10;	// number of loops.
+ intptr_t    i_max = 10;	// number of loops.
 	int     preload = 1;	// loops to throw away (preload cache).
 	double  ztime;		// timer overhead.
 	double  usec[4];	// for early timing tests.

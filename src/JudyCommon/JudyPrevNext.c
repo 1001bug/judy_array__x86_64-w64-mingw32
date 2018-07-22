@@ -1132,9 +1132,9 @@ SM1LeafB1Findlimit:
 
 #define	SM1IMM_01							  \
 	SM1IMM_01_SETPOP1;						  \
-	offset = ((JU_JPDCDPOP0(Pjp) <  JU_TRIMTODCDSIZE(*PIndex)) ? ~1 : \
+	offset = ((JU_JPDCDPOP0(Pjp) <  JU_TRIMTODCDSIZE(*PIndex)) ? ~((Word_t)1) : \
 		  (JU_JPDCDPOP0(Pjp) == JU_TRIMTODCDSIZE(*PIndex)) ?  0 : \
-								     ~0); \
+								     ~((Word_t)0)); \
 	goto SM1LeafLImm
 
 	case cJU_JPIMMED_1_01:

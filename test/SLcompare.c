@@ -313,7 +313,7 @@ scmp(char *s1, char *s2)
    Permission to use this code is freely granted, provided that this
    statement is retained. */
 
-#define TSIZE (1LU << 20)  /* many processors need this to be a pwr of 2 */
+#define TSIZE (((Word_t)1) << 20)  /* many processors need this to be a pwr of 2 */
 #define SEED	1159241
 #define HASHFN  bitwisehash
 

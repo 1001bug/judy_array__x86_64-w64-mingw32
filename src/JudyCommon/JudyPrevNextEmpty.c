@@ -173,7 +173,7 @@ FUNCTION int JudyLNextEmpty
 	Word_t	  digits;	// current state in SM = digits left to decode.
 	Word_t	  pop0;		// in a leaf.
 	Word_t	  pop0mask;	// precalculated to avoid variable shifts.
-	long	  offset;	// within a branch or leaf (can be large).
+ intptr_t   offset;	// within a branch or leaf (can be large).
 	int	  subexp;	// subexpanse in a bitmap branch.
 	BITMAPB_t bitposmaskB;	// bit in bitmap for bitmap branch.
 	BITMAPL_t bitposmaskL;	// bit in bitmap for bitmap leaf.
@@ -1238,7 +1238,7 @@ LeafB1NextSubexp:	// return here to check next bitmap subexpanse.
 	    if (subexp-- > 0)		// more subexpanses.
 	    {
 		LEAFB1_STARTSUBEXP(SETLEASTDIGITS_D);
-		bitposmaskL = (1UL << (cJU_BITSPERSUBEXPL - 1));
+		bitposmaskL = (((Word_t)1) << (cJU_BITSPERSUBEXPL - 1));
 		goto LeafB1NextSubexp;
 	    }
 

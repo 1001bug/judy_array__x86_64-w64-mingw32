@@ -15,61 +15,61 @@
 
 #define LARRAYSIZE(array) sizeof(array)/sizeof(Word_t)
 
-static Word_t set1[] = { 0L,
-    5L,
-    6L,
-    7L,
-    1024L,
-    11111L,
-    65534L,
-    65535L,
-    65536L,
-    555555L,
+static Word_t set1[] = { ((Word_t)0),
+    ((Word_t)5),
+    ((Word_t)6),
+    ((Word_t)7),
+    ((Word_t)1024),
+    ((Word_t)11111),
+    ((Word_t)65534),
+    ((Word_t)65535),
+    ((Word_t)65536),
+    ((Word_t)555555),
     ULONG_MAX
 };
 
-static Word_t set2[] = { 7L,
-    9L,
-    1023L,
-    12345L,
-    65535L,
+static Word_t set2[] = { ((Word_t)7),
+    ((Word_t)9),
+    ((Word_t)1023),
+    ((Word_t)12345),
+    ((Word_t)65535),
     ULONG_MAX
 };
 
-static Word_t resultAND[] = { 7L,
-    65535L,
+static Word_t resultAND[] = { ((Word_t)7),
+    ((Word_t)65535),
     ULONG_MAX
 };
 
-static Word_t resultOR[] = { 0L,
-    5L,
-    6L,
-    7L,
-    9L,
-    1023L,
-    1024L,
-    11111L,
-    12345L,
-    65534L,
-    65535L,
-    65536L,
-    555555L,
+static Word_t resultOR[] = { ((Word_t)0),
+    ((Word_t)5),
+    ((Word_t)6),
+    ((Word_t)7),
+    ((Word_t)9),
+    ((Word_t)1023),
+    ((Word_t)1024),
+    ((Word_t)11111),
+    ((Word_t)12345),
+    ((Word_t)65534),
+    ((Word_t)65535),
+    ((Word_t)65536),
+    ((Word_t)555555),
     ULONG_MAX
 };
 
-static Word_t result1ANDNOT2[] = { 0L,
-    5L,
-    6L,
-    1024L,
-    11111L,
-    65534L,
-    65536L,
-    555555L
+static Word_t result1ANDNOT2[] = { ((Word_t)0),
+    ((Word_t)5),
+    ((Word_t)6),
+    ((Word_t)1024),
+    ((Word_t)11111),
+    ((Word_t)65534),
+    ((Word_t)65536),
+    ((Word_t)555555)
 };
 
-static Word_t result2ANDNOT1[] = { 9L,
-    1023L,
-    12345L
+static Word_t result2ANDNOT1[] = { ((Word_t)9),
+    ((Word_t)1023),
+    ((Word_t)12345)
 };
 
 // fcn to init a Judy array with an array of ulong's
@@ -80,7 +80,7 @@ ularray2Judy(Word_t *ularray, Word_t ularray_size)
     void     *PJArray = 0;
     JError_t  JError;
 
-    for (i = 0L; i < ularray_size; i++)
+    for (i = ((Word_t)0); i < ularray_size; i++)
     {
         if (Judy1Set(&PJArray, ularray[i], &JError) == JERR)
         {
@@ -108,7 +108,7 @@ testandcheck(void *PJSet1, void *PJSet2, Word_t operation,
         printf(" failed, error %d\n", JU_ERRNO(&JError));
     else
     {                                   // check results
-        for (i = 0, Index = 0L, judy_rv =
+        for (i = 0, Index = ((Word_t)0), judy_rv =
              Judy1First(PJArrayNew, &Index, &JError); judy_rv == 1;
              i++, judy_rv = Judy1Next(PJArrayNew, &Index, &JError))
         {

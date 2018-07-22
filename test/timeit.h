@@ -82,7 +82,7 @@ double find_CPU_speed(void);
 // compiler does not optimize out the code even without it:
 
 #define	TIMER_vars(T)					 \
-	register unsigned long  __start_##T, __stop_##T; \
+	register uintptr_t  __start_##T, __stop_##T; \
 		 struct timeval __TVBeg_##T, __TVEnd_##T
 
 #define	__START_HRTm(T) _asm("MFCTL", CR_IT, __start_##T)
@@ -98,7 +98,7 @@ double find_CPU_speed(void);
 double find_CPU_speed(void);
 
 #define	TIMER_vars(T)					 \
-	register unsigned long  __start_##T, __stop_##T; \
+	register uintptr_t  __start_##T, __stop_##T; \
 		 struct timeval __TVBeg_##T, __TVEnd_##T
 
 #define	__START_HRTm(T) rdtscl(__start_##T)
@@ -117,7 +117,7 @@ double find_CPU_speed(void);
 
 double find_CPU_speed(void);
 
-// Using cycles_t rather than unsigned long [long] should be more portable;
+// Using cycles_t rather than uintptr_t [long] should be more portable;
 // and, it appears necessary to mark __start_* and __end_* as volatile so the
 // gcc compiler does not optimize out the register access:
 

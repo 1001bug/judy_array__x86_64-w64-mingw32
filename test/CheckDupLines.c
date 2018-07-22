@@ -29,16 +29,16 @@ main()
         if (*PValue)			// check if duplicate
 	{
             Dups++;			// yes, count
-	    printf("Duplicate lines %lu:%lu:%s", *PValue, LineNumb, Index);
+	    printf("Duplicate lines %"PRIuPTR":%"PRIuPTR":%s", *PValue, LineNumb, Index);
 	}
 	else
 	{
 	    *PValue = LineNumb;		// store Line number
 	}
     }
-    printf("%lu Duplicates, free JudyHS array of %lu Lines\n", 
+    printf("%"PRIuPTR" Duplicates, free JudyHS array of %"PRIuPTR" Lines\n", 
 		    Dups, LineNumb - Dups);
     JHSFA(Bytes, PJArray);              // free array
-    printf("The JudyHS array allocated %lu bytes of memory\n", Bytes);
+    printf("The JudyHS array allocated %"PRIuPTR" bytes of memory\n", Bytes);
     return (0);
 }

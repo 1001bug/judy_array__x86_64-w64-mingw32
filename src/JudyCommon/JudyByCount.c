@@ -113,8 +113,8 @@ FUNCTION PPvoid_t JudyLByCount
 	Word_t	  pop1lower;	// pop1 of expanses (JPs) below that for Count.
 	Word_t	  digit;	// current word in branch.
 	Word_t	  jpcount;	// JPs in a BranchB subexpanse.
-	long	  jpnum;	// JP number in a branch (base 0).
-	long	  subexp;	// for stepping through layer 1 (subexpanses).
+ intptr_t   jpnum;	// JP number in a branch (base 0).
+ intptr_t   subexp;	// for stepping through layer 1 (subexpanses).
 	int	  offset;	// index ordinal within a leaf, base 0.
 
 	Pjp_t	  Pjp;		// current JP in branch.
@@ -138,7 +138,7 @@ FUNCTION PPvoid_t JudyLByCount
 // Note:  Think of Count0 as a reliable "number of Indexes below the target."
 
 	Count0 = Count - 1;
-	assert((Count || Count0 == ~0));  // ensure CPU is sane about 0 - 1.
+	assert((Count || Count0 == ~((Word_t)0)));  // ensure CPU is sane about 0 - 1.
 	pop1lower = 0;
 
 	if (JU_LEAFW_POP0(PArray) < cJU_LEAFW_MAXPOP1) // must be a LEAFW

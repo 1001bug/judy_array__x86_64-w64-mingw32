@@ -359,7 +359,7 @@ const	Pjpm_t	Pjpm)		// for returning error info.
 	Pjll_t	Pjll;		// a Judy lower-level linear leaf.
 
 	Word_t	digit;		// next digit to decode from Index.
-	long	jpnum;		// JP number in a branch (base 0).
+ intptr_t jpnum;		// JP number in a branch (base 0).
 	int	offset;		// index ordinal within a leaf, base 0.
 	Word_t	pop1;		// total population of an expanse.
 	Word_t	pop1above;	// to return.
@@ -493,8 +493,8 @@ BranchL:
 
 BranchB:
 	{
-	    long   subexp;	// for stepping through layer 1 (subexpanses).
-	    long   findsub;	// subexpanse containing   Index (digit).
+	    intptr_t   subexp;	// for stepping through layer 1 (subexpanses).
+	    intptr_t   findsub;	// subexpanse containing   Index (digit).
 	    Word_t findbit;	// bit	      representing Index (digit).
 	    Word_t lowermask;	// bits for indexes at or below Index.
 	    Word_t jpcount;	// JPs in a subexpanse.
@@ -637,7 +637,7 @@ BranchB:
 
 	    else
 	    {
-		long jpcountbf;			// below findbit, inclusive.
+	 intptr_t jpcountbf;			// below findbit, inclusive.
 #ifdef SMARTMETRICS
 		++jbb_downward;
 #endif
@@ -986,7 +986,7 @@ const	Word_t	Index)		// to which to count.
 	Word_t	findsub = digit / cJU_BITSPERSUBEXPL;
 	Word_t	findbit = digit % cJU_BITSPERSUBEXPL;
 	int	count;		// in leaf through Index.
-	long	subexp;		// for stepping through subexpanses.
+ intptr_t subexp;		// for stepping through subexpanses.
 
 
 // COUNT UPWARD:

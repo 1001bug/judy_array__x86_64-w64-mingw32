@@ -11,7 +11,7 @@
  *   Judy1Set() - Sounds like you are setting a bit.
  *   Judy1BS()  - BS for Bit Set functions.
  *   Judy1SO()  - SO for Set Operations
- *   Judy1AndIDontGiveADarn() - too long but goes with
+ *   Judy1AndIDontGiveADarn() - too intptr_t but goes with
  *   Judy1WhoseOnFirst() - now called Judy1First() and
  *   Judy1WhatsOnSecond() - now called Judy1Next()
  *
@@ -67,8 +67,8 @@ Judy1Op(PPvoid_t PPDest, Pvoid_t PSet1, Pvoid_t PSet2,
         Word_t Operation, JError_t * PJError)
 {
     Pvoid_t   PnewJArray = 0;           // empty Judy array
-    Word_t    Index1 = 0L;
-    Word_t    Index2 = 0L;
+    Word_t    Index1 = ((Word_t)0);
+    Word_t    Index2 = ((Word_t)0);
     int       Judy_rv;
 
     if (!PPDest)
@@ -109,7 +109,7 @@ Judy1Op(PPvoid_t PPDest, Pvoid_t PSet1, Pvoid_t PSet2,
 
     case JUDY1OP_OR:
         /* Set all the bits from PSet1 */
-        for (Index1 = 0L, Judy_rv = Judy1First(PSet1, &Index1, PJError);
+        for (Index1 = ((Word_t)0), Judy_rv = Judy1First(PSet1, &Index1, PJError);
              Judy_rv == 1; Judy_rv = Judy1Next(PSet1, &Index1, PJError))
         {
             if (Judy1Set(&PnewJArray, Index1, PJError) == JERR)
@@ -117,7 +117,7 @@ Judy1Op(PPvoid_t PPDest, Pvoid_t PSet1, Pvoid_t PSet2,
         }
 
         /* Set all the bits from PSet2 */
-        for (Index1 = 0L, Judy_rv = Judy1First(PSet2, &Index1, PJError);
+        for (Index1 = ((Word_t)0), Judy_rv = Judy1First(PSet2, &Index1, PJError);
              Judy_rv == 1; Judy_rv = Judy1Next(PSet2, &Index1, PJError))
         {
             if (Judy1Set(&PnewJArray, Index1, PJError) == JERR)
@@ -130,7 +130,7 @@ Judy1Op(PPvoid_t PPDest, Pvoid_t PSet1, Pvoid_t PSet2,
         // PSet1 with PSet2 removed
         // 0010 = PSet1(1010) ANDNOT PSet2(1100)
 
-        for (Index1 = 0L, Judy_rv = Judy1First(PSet1, &Index1, PJError);
+        for (Index1 = ((Word_t)0), Judy_rv = Judy1First(PSet1, &Index1, PJError);
              Judy_rv == 1; Judy_rv = Judy1Next(PSet1, &Index1, PJError))
         {
             // if bit doesn't exist in PSet2, then add to result

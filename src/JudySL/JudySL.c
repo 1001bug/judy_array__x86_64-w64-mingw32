@@ -101,7 +101,7 @@
 // word is null (assume big-endian, including in a register on a little-endian
 // machine):
 
-#define LASTWORD_BY_VALUE(WORD) (! ((WORD) & 0xffL))
+#define LASTWORD_BY_VALUE(WORD) (! ((WORD) & ((Word_t)0xff)))
 
 #ifdef JU_64BIT
 
@@ -836,7 +836,7 @@ JudySLPrevSub(Pcvoid_t PArray, uint8_t * Index, int orig,
             return (&PSCLVALUE(PArray));
         }
 
-        indexword = ~0UL;
+        indexword = ~((Word_t)0);
         if ((PPValue = JudyLLast(PArray, &indexword, PJError)) == PPJERR)
         {
             JudySLModifyErrno(PJError, PArray, orig ? PArray : (Pvoid_t)NULL);

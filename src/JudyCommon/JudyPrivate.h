@@ -293,7 +293,7 @@ typedef int bool_t;
 
 // Bits Per Byte:
 
-#define cJU_BITSPERBYTE 0x8
+#define cJU_BITSPERBYTE ((Word_t)0x8)
 
 // Bytes Per Word and Bits Per Word, latter assuming sizeof(byte) is 8 bits:
 //
@@ -305,9 +305,9 @@ typedef int bool_t;
 #define JU_BYTESTOWORDS(BYTES) \
         (((BYTES) + cJU_BYTESPERWORD - 1) / cJU_BYTESPERWORD)
 
-// A word that is all-ones, normally equal to -1UL, but safer with ~0:
+// A word that is all-ones, normally equal to -((Word_t)1), but safer with ~0:
 
-#define cJU_ALLONES  (~0UL)
+#define cJU_ALLONES  (~((Word_t)0))
 
 // Note, these are forward references, but thats OK:
 
@@ -411,7 +411,7 @@ typedef PWord_t Pjv_t;   // pointer to JudyL value area.
 // processors.
 
 #define JU_LEASTBYTESMASK(BYTES) \
-        ((0x100UL << (cJU_BITSPERBYTE * ((BYTES) - 1))) - 1)
+        ((((Word_t)0x100) << (cJU_BITSPERBYTE * ((BYTES) - 1))) - 1)
 
 #define JU_LEASTBYTES(INDEX,BYTES)  ((INDEX) & JU_LEASTBYTESMASK(BYTES))
 
@@ -540,7 +540,7 @@ extern const uint8_t j__L_BranchBJPPopToWords[];
     Word_t   m_id;                                              \
     Word_t   h_igh  = POP1;                                     \
                                                                 \
-    while ((h_igh - l_ow) > 1UL)                                \
+    while ((h_igh - l_ow) > ((Word_t)1))                                \
     {                                                           \
         m_id = (h_igh + l_ow) / 2;                              \
         if (P_leaf[m_id] > I_ndex)                              \
@@ -563,7 +563,7 @@ extern const uint8_t j__L_BranchBJPPopToWords[];
                                                                 \
     I_ndex = JU_LEASTBYTES((INDEX), (LFBTS));                   \
                                                                 \
-    while ((h_igh - l_ow) > 1UL)                                \
+    while ((h_igh - l_ow) > ((Word_t)1))                                \
     {                                                           \
         m_id = (h_igh + l_ow) / 2;                              \
         COPYINDEX(i_ndex, &P_leaf[m_id * (LFBTS)]);             \
@@ -801,8 +801,8 @@ static inline BITMAPL_t j__udyCountBitsL(BITMAPL_t word)
 //
 // TBD:  Perhaps use an array[32] of masks instead of calculating them.
 
-#define JU_BITPOSMASKB(BITNUM) (1L << ((BITNUM) % cJU_BITSPERSUBEXPB))
-#define JU_BITPOSMASKL(BITNUM) (1L << ((BITNUM) % cJU_BITSPERSUBEXPL))
+#define JU_BITPOSMASKB(BITNUM) (((Word_t)1) << ((BITNUM) % cJU_BITSPERSUBEXPB))
+#define JU_BITPOSMASKL(BITNUM) (((Word_t)1) << ((BITNUM) % cJU_BITSPERSUBEXPL))
 
 
 // TEST/SET/CLEAR A BIT IN A BITMAP LEAF:
@@ -1007,7 +1007,7 @@ static inline BITMAPL_t j__udyCountBitsL(BITMAPL_t word)
 
 // Fast version for single LSB:
 
-#define JU_SETDIGIT1(INDEX,DIGIT) (INDEX) = ((INDEX) & ~0xff) | (DIGIT)
+#define JU_SETDIGIT1(INDEX,DIGIT) (INDEX) = ((INDEX) & ~((Word_t)0xff)) | (DIGIT)
 
 
 // SET (REPLACE) "N" LEAST DIGITS IN AN INDEX:
@@ -1365,7 +1365,7 @@ assert((Word_t) (OFFSET) <= (Word_t) (POP1));                   \
 // return int or Word_t using JERR, which is type Word_t, for errors.  Lint
 // complains about this for functions that return int.  So, internally use
 // JERRI for error returns from the int functions.  Experiments show that
-// callers which compare int Foo() to (Word_t) JERR (~0UL) are OK, since JERRI
+// callers which compare int Foo() to (Word_t) JERR (~((Word_t)0)) are OK, since JERRI
 // sign-extends to match JERR.
 
 #define JERRI ((int) ~0)                // see above.

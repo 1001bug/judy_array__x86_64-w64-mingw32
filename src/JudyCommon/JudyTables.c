@@ -194,7 +194,7 @@ FUNCTION int main()
 #endif
 
     if ((fd = fopen(fname, "w")) == NULL){
-	perror("FATAL ERROR: could not write to Judy[1L]Tables.c file\n");
+	perror("FATAL ERROR: could not write to Judy[((Word_t)1)]Tables.c file\n");
 	return (-1);
     }
 
@@ -260,7 +260,7 @@ FUNCTION int main()
     for (ii = 0; AllocSizes[ii] != TERMINATOR; ii++)
 	fprintf(fd," %d,", AllocSizes[ii]);
 
-    fprintf(fd," Leaf1 = %ld\";\n\n", (Word_t)cJL_LEAF1_MAXPOP1);
+    fprintf(fd," Leaf1 = %"PRIdPTR"\";\n\n", (Word_t)cJL_LEAF1_MAXPOP1);
 
 #ifndef JU_64BIT
 // ================================ 32 bit ================================

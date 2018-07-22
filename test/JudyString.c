@@ -10,7 +10,7 @@ char    Index[MAXLENSTR];            // string to store.
 
 Pvoid_t   PJHArray = (PWord_t)NULL;  // Judy array.
 
-// By Doug Baskins Apr 2004 - for JudyHS man page -- but too long
+// By Doug Baskins Apr 2004 - for JudyHS man page -- but too intptr_t 
 
 int     // Usage:  JudyString file_to_store
 main(int argc, char *argv[])
@@ -21,7 +21,7 @@ main(int argc, char *argv[])
     Word_t    Len;                      // length of string
     FILE     *fid = NULL;               // stream id
     int       Chr;                      // next char
-    long      Lines;                    // number of lines input file
+    intptr_t      Lines;                    // number of lines input file
     Word_t    Dups;                     // Count duplicate lines
 
     if (argc < 2)
@@ -45,7 +45,7 @@ main(int argc, char *argv[])
         {
             Index[Len] = '\0';
 
-//printf("%3lu,%lu: %s\n", Lines, Len, Index);
+//printf("%3"PRIuPTR",%"PRIuPTR": %s\n", Lines, Len, Index);
 //printf("%s\n", Index);
 
             JHSI(PValue, PJHArray, Index, Len); // store string into array
@@ -64,7 +64,7 @@ main(int argc, char *argv[])
     fclose(fid);
     fid = NULL;
 
-    printf("'%s' has %lu lines, %lu duplicate lines\n", argv[1], Lines, Dups);
+    printf("'%s' has %"PRIuPTR" lines, %"PRIuPTR" duplicate lines\n", argv[1], Lines, Dups);
 
     printf("Re-open '%s' and verify each string is in JudyHS array\n", argv[1]);
 
@@ -88,7 +88,7 @@ main(int argc, char *argv[])
             if (PValue == NULL)
             {
                 printf("'%s'\n", Index);
-                printf("JHSG() failed at Line %lu\n", Lines);
+                printf("JHSG() failed at Line %"PRIuPTR"\n", Lines);
                 exit(1);
             }
             Len = 0;
@@ -101,6 +101,6 @@ main(int argc, char *argv[])
 
     JHSFA(Bytes, PJHArray);                     // free array
 
-    fprintf(stderr, "JHSFA() free'ed %lu bytes of memory\n", Bytes);
+    fprintf(stderr, "JHSFA() free'ed %"PRIuPTR" bytes of memory\n", Bytes);
     return (0);
 }

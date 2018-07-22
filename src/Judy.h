@@ -91,7 +91,7 @@ typedef void ** PPvoid_t;
 
 #ifndef _WORD_T
 #define _WORD_T
-typedef unsigned long    Word_t, * PWord_t;  // expect 32-bit or 64-bit words.
+typedef uintptr_t    Word_t, * PWord_t;  // expect 32-bit or 64-bit words.
 #endif
 
 #ifndef NULL
@@ -197,12 +197,12 @@ typedef struct J_UDY_ERROR_STRUCT
 // For checking return values from various Judy functions:
 //
 // Note:  Define JERR as -1, not as the seemingly more portable (Word_t)
-// (~0UL), to avoid a compiler "overflow in implicit constant conversion"
+// (~((Word_t)0)), to avoid a compiler "overflow in implicit constant conversion"
 // warning.
 
 #define   JERR (-1)                     /* functions returning int or Word_t */
-#define  PJERR ((Pvoid_t)  (~0UL))      /* mainly for use here, see below    */
-#define PPJERR ((PPvoid_t) (~0UL))      /* functions that return PPvoid_t    */
+#define  PJERR ((Pvoid_t)  (~((Word_t)0)))      /* mainly for use here, see below    */
+#define PPJERR ((PPvoid_t) (~((Word_t)0)))      /* functions that return PPvoid_t    */
 
 // Convenience macro for when detailed error information (PJError_t) is not
 // desired by the caller; a purposely short name:
@@ -299,7 +299,7 @@ extern Word_t JudyMallocVirtual(Word_t);        // words reqd => words allocd.
 extern void   JudyFree(Pvoid_t, Word_t);        // free, size in words.
 extern void   JudyFreeVirtual(Pvoid_t, Word_t); // free, size in words.
 
-#define JLAP_INVALID    0x1     /* flag to mark pointer "not a Judy array" */
+#define JLAP_INVALID    ((Word_t)0x1)     /* flag to mark pointer "not a Judy array" */
 
 // ****************************************************************************
 // MACRO EQUIVALENTS FOR JUDY FUNCTIONS:

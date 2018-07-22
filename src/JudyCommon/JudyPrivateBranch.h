@@ -340,10 +340,10 @@ typedef struct J__UDY_BRANCH_UNCOMPRESSED
 
 // These are set up to have conservative conversion schedules to BranchU:
 
-#define JU_BRANCHL_MAX_POP      (-1UL)
+#define JU_BRANCHL_MAX_POP      (-((Word_t)1))
 #define JU_BTOU_POP_INCREMENT      300
 #define JU_BRANCHB_MIN_POP        1000
-#define JU_BRANCHB_MAX_POP      (-1UL)
+#define JU_BRANCHB_MAX_POP      (-((Word_t)1))
 
 #endif // NO_BRANCHU
 
@@ -361,7 +361,7 @@ typedef struct J__UDY_BRANCH_UNCOMPRESSED
 
 // Produce 1-digit mask at specified state:
 
-#define cJU_MASKATSTATE(State)  (0xffL << (((State) - 1) * cJU_BITSPERBYTE))
+#define cJU_MASKATSTATE(State)  (((Word_t)0xff) << (((State) - 1) * cJU_BITSPERBYTE))
 
 // Get byte (digit) from Index at the specified state, right justified:
 //
@@ -447,8 +447,8 @@ FUNCTION void Init (
         *PoIndex = (91 << 24) | (92 << 16) | (93 << 8) | 94;
 #else
 
-        *PoIndex = (91L << 56) | (92L << 48) | (93L << 40) | (94L << 32)
-                 | (95L << 24) | (96L << 16) | (97L <<  8) |  98L;
+        *PoIndex = (((Word_t)91) << 56) | (((Word_t)92) << 48) | (((Word_t)93) << 40) | (((Word_t)94) << 32)
+                 | (((Word_t)95) << 24) | (((Word_t)96) << 16) | (((Word_t)97) <<  8) |  ((Word_t)98);
 
         for (offset = 0; offset < (INDEXES + 1) * 5; ++offset)
             Poleaf5[offset] = base + offset;

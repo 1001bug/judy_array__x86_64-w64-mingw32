@@ -70,22 +70,22 @@ static bool_t enabled    = FALSE;       // by default, unless env params set.
 // is left unfinished.
 //
 // Note:  Use a format for address printing compatible with other tracing
-// facilities; in particular, %x not %lx, to truncate the "noisy" high part on
+// facilities; in particular, %x not %"PRIxPTR", to truncate the "noisy" high part on
 // 64-bit systems.
 
-#define JPTYPE(Type)  printf("0x%lx %s %-17s", (Word_t) Pjp, Desc, Type)
+#define JPTYPE(Type)  printf("0x%"PRIxPTR" %s %-17s", (Word_t) Pjp, Desc, Type)
 
 // Shorthands for announcing expanse populations from DcdPopO fields:
 
 #define POP0 printf("Pop1 = 0 ")
-#define POP1 printf("Pop1 = %ld ", (Word_t) ((JU_JPDCDPOP0(Pjp) &            0xff) + 1))
-#define POP2 printf("Pop1 = %ld ", (Word_t) ((JU_JPDCDPOP0(Pjp) &          0xffff) + 1))
-#define POP3 printf("Pop1 = %ld ", (Word_t) ((JU_JPDCDPOP0(Pjp) &        0xffffff) + 1))
+#define POP1 printf("Pop1 = %"PRIdPTR" ", (Word_t) ((JU_JPDCDPOP0(Pjp) &            0xff) + 1))
+#define POP2 printf("Pop1 = %"PRIdPTR" ", (Word_t) ((JU_JPDCDPOP0(Pjp) &          0xffff) + 1))
+#define POP3 printf("Pop1 = %"PRIdPTR" ", (Word_t) ((JU_JPDCDPOP0(Pjp) &        0xffffff) + 1))
 #ifdef JU_64BIT
-#define POP4 printf("Pop1 = %ld ", (Word_t) ((JU_JPDCDPOP0(Pjp) &       0xffffffff) + 1))
-#define POP5 printf("Pop1 = %ld ", (Word_t) ((JU_JPDCDPOP0(Pjp) &     0xffffffffff) + 1))
-#define POP6 printf("Pop1 = %ld ", (Word_t) ((JU_JPDCDPOP0(Pjp) &   0xffffffffffff) + 1))
-#define POP7 printf("Pop1 = %ld ", (Word_t) ((JU_JPDCDPOP0(Pjp) & 0xffffffffffffff) + 1))
+#define POP4 printf("Pop1 = %"PRIdPTR" ", (Word_t) ((JU_JPDCDPOP0(Pjp) &       0xffffffff) + 1))
+#define POP5 printf("Pop1 = %"PRIdPTR" ", (Word_t) ((JU_JPDCDPOP0(Pjp) &     0xffffffffff) + 1))
+#define POP6 printf("Pop1 = %"PRIdPTR" ", (Word_t) ((JU_JPDCDPOP0(Pjp) &   0xffffffffffff) + 1))
+#define POP7 printf("Pop1 = %"PRIdPTR" ", (Word_t) ((JU_JPDCDPOP0(Pjp) & 0xffffffffffffff) + 1))
 #endif
 
 // Shorthands for announcing populations of Immeds:
@@ -158,7 +158,7 @@ static  bool_t checked = FALSE; // set upon first entry and check for params.
             (Value) = strtoul (value, (char **) NULL, Base);    \
             enabled |= ((Value) == 0);  /* see above */         \
                                                                 \
-            (void) printf ("JudyPrintJP(\"%s\"): $%s = %lu\n",  \
+            (void) printf ("JudyPrintJP(\"%s\"): $%s = %"PRIuPTR"\n",  \
                            Desc, Name, Value);                  \
         }
 
@@ -181,13 +181,13 @@ static  bool_t checked = FALSE; // set upon first entry and check for params.
             if (startindex && (startindex == j__udyIndex))
             {
                  (void) printf ("=== TRACING ENABLED (\"%s\"), "
-                                "startindex = 0x%lx\n", Desc, startindex);
+                                "startindex = 0x%"PRIxPTR"\n", Desc, startindex);
                  enabled = TRUE;
             }
             else if (startpop && (startpop == j__udyPopulation))
             {
                  (void) printf ("=== TRACING ENABLED (\"%s\"), "
-                                "startpop = %lu\n", Desc, startpop);
+                                "startpop = %"PRIuPTR"\n", Desc, startpop);
                  enabled = TRUE;
             }
             else
@@ -393,8 +393,8 @@ static  bool_t checked = FALSE; // set upon first entry and check for params.
         default:  printf("Unknown Type = %d", JU_JPTYPE(Pjp));          OOPS;
         }
 
-        if (j__udyIndex)        printf("Index = 0x%lx", j__udyIndex);
-        if (j__udyPopulation)   printf("Pop = %lu",     j__udyPopulation);
+        if (j__udyIndex)        printf("Index = 0x%"PRIxPTR"", j__udyIndex);
+        if (j__udyPopulation)   printf("Pop = %"PRIuPTR"",     j__udyPopulation);
 
         printf("line = %d\n", Line);
 

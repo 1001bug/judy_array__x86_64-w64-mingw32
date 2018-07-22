@@ -29,6 +29,6 @@ main()
     }
     JSLFA(Bytes, PJArray);              // free array
 
-    fprintf(stderr, "The JudySL array used %lu bytes of memory\n", Bytes);
+    fprintf(stderr, "The JudySL array used %"PRIuPTR" bytes of memory\n", Bytes);
     return (0);
 }

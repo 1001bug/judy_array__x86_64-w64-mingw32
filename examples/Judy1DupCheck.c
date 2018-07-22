@@ -21,7 +21,7 @@ ularray2Judy(Word_t *ularray, Word_t ularray_size)
     Pvoid_t   PJArray = 0;
     JError_t  JError;
 
-    for (i = 0L; i < ularray_size; i++)
+    for (i = ((Word_t)0); i < ularray_size; i++)
     {
         if (Judy1Set(&PJArray, ularray[i], &JError) == JERR)
         {
@@ -57,7 +57,7 @@ main()
     }
 
     // compare the duped array with known values
-    for (i = 0, Index = 0L, Judy_rv = Judy1First(PJArrayNew, &Index, &JError);
+    for (i = 0, Index = ((Word_t)0), Judy_rv = Judy1First(PJArrayNew, &Index, &JError);
          Judy_rv == 1; i++, Judy_rv = Judy1Next(PJArrayNew, &Index, &JError))
     {
         if (Index != knowns[i])

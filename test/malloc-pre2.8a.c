@@ -48,14 +48,14 @@ static int slwait(int *sl);
 static int slrelease(int *sl);
 #endif
 
-static long getpagesize(void);
-static long getregionsize(void);
+static intptr_t getpagesize(void);
+static intptr_t getregionsize(void);
 static void *sbrk(long size);
-static void *mmap(void *ptr, long size, long prot, long type, long handle, long arg);
-static long munmap(void *ptr, long size);
+static void *mmap(void *ptr, intptr_t size, intptr_t prot, intptr_t type, intptr_t handle, intptr_t arg);
+static intptr_t munmap(void *ptr, intptr_t size);
 
-static void vminfo (unsigned long*free, unsigned long*reserved, unsigned long*committed);
-static int cpuinfo (int whole, unsigned long*kernel, unsigned long*user);
+static void vminfo (uintptr_t*free, uintptr_t*reserved, uintptr_t*committed);
+static int cpuinfo (int whole, uintptr_t*kernel, uintptr_t*user);
 
 #endif
 
@@ -135,10 +135,10 @@ extern "C" {
 */
 
 #ifndef CHUNK_SIZE_T
-#define CHUNK_SIZE_T unsigned long
+#define CHUNK_SIZE_T uintptr_t
 #endif
 
-#define MAX_CHUNK_SIZE  ((CHUNK_SIZE_T)(-1UL))
+#define MAX_CHUNK_SIZE  ((CHUNK_SIZE_T)(-((Word_t)1)))
 
 /* 
   The unsigned integer type used to hold addresses when they are are
@@ -146,7 +146,7 @@ extern "C" {
   systems, intptr_t would suffice.
 */
 #ifndef PTR_UINT
-#define PTR_UINT unsigned long
+#define PTR_UINT uintptr_t
 #endif
 
 
@@ -170,12 +170,12 @@ extern "C" {
 
   Implementors: Beware of the possible combinations of:
      - INTERNAL_SIZE_T might be signed or unsigned, might be 32 or 64 bits,
-       and might be the same width as int or as long
+       and might be the same width as int or as intptr_t 
      - size_t might have different width and signedness as INTERNAL_SIZE_T
-     - int and long might be 32 or 64 bits, and might be the same width
+     - int and intptr_t might be 32 or 64 bits, and might be the same width
   To deal with this, most comparisons and difference computations
   among INTERNAL_SIZE_Ts should cast them to CHUNK_SIZE_T, being
-  aware of the fact that casting an unsigned int to a wider long does
+  aware of the fact that casting an unsigned int to a wider intptr_t does
   not sign-extend. (This also makes checking for negative numbers
   awkward.) Some of these casts result in harmless compiler warnings
   on some systems.
@@ -591,7 +591,7 @@ extern Void_t*     sbrk(ptrdiff_t);
   version is declared below.  These must be precisely the same for
   mallinfo() to work.  The original SVID version of this struct,
   defined on most systems with mallinfo, declares all fields as
-  ints. But some others define as unsigned long. If your system
+  ints. But some others define as uintptr_t. If your system
   defines the fields using a type of different width than listed here,
   you must #include your system version and #define
   HAVE_USR_INCLUDE_MALLOC_H.
@@ -723,7 +723,7 @@ Void_t*  public_vALLOc(size_t);
   Sets tunable parameters The format is to provide a
   (parameter-number, parameter-value) pair.  mallopt then sets the
   corresponding parameter to the argument value if it can (i.e., so
-  long as the value is meaningful), and returns 1 if successful else
+  intptr_t as the value is meaningful), and returns 1 if successful else
   0.  SVID/XPG/ANSI defines four standard param numbers for mallopt,
   normally defined in malloc.h.  Only one of these (M_MXFAST) is used
   in this malloc. The others (M_NLBLKS, M_GRAIN, M_KEEP) don't apply,
@@ -1021,7 +1021,7 @@ void     public_mSTATs();
   system-level demands of a long-lived program down to a bare
   minimum. For example, in one test suite of sessions measuring
   the XF86 X server on Linux, using a trim threshold of 128K and a
-  mmap threshold of 192K led to near-minimal long term resource
+  mmap threshold of 192K led to near-minimal intptr_t term resource
   consumption.
 
   If you are using this malloc in a long-lived program, it should
@@ -1046,7 +1046,7 @@ void     public_mSTATs();
 
   The trim value must be greater than page size to have any useful
   effect.  To disable trimming completely, you can set to 
-  (unsigned long)(-1)
+  (uintptr_t)(-1)
 
   Trim settings interact with fastbin (MXFAST) settings: Unless
   TRIM_FASTBINS is defined, automatic trimming never takes place upon
@@ -1432,7 +1432,7 @@ int public_mALLOPt(int p, int v) {
 do {                                                                        \
   INTERNAL_SIZE_T* mzp = (INTERNAL_SIZE_T*)(charp);                         \
   CHUNK_SIZE_T  mctmp = (nbytes)/sizeof(INTERNAL_SIZE_T);                   \
-  long mcn;                                                                 \
+  intptr_t mcn;                                                                 \
   if (mctmp < 8) mcn = 0; else { mcn = (mctmp-1)/8; mctmp %= 8; }           \
   switch (mctmp) {                                                          \
     case 0: for(;;) { *mzp++ = 0;                                           \
@@ -1451,7 +1451,7 @@ do {                                                                        \
   INTERNAL_SIZE_T* mcsrc = (INTERNAL_SIZE_T*) src;                          \
   INTERNAL_SIZE_T* mcdst = (INTERNAL_SIZE_T*) dest;                         \
   CHUNK_SIZE_T  mctmp = (nbytes)/sizeof(INTERNAL_SIZE_T);                   \
-  long mcn;                                                                 \
+  intptr_t mcn;                                                                 \
   if (mctmp < 8) mcn = 0; else { mcn = (mctmp-1)/8; mctmp %= 8; }           \
   switch (mctmp) {                                                          \
     case 0: for(;;) { *mcdst++ = *mcsrc++;                                  \
@@ -4000,21 +4000,21 @@ void mSTATs() {
   {
     CHUNK_SIZE_T  free, reserved, committed;
     vminfo (&free, &reserved, &committed);
-    fprintf(stderr, "free bytes       = %10lu\n", 
+    fprintf(stderr, "free bytes       = %10"PRIuPTR"\n", 
             free);
-    fprintf(stderr, "reserved bytes   = %10lu\n", 
+    fprintf(stderr, "reserved bytes   = %10"PRIuPTR"\n", 
             reserved);
-    fprintf(stderr, "committed bytes  = %10lu\n", 
+    fprintf(stderr, "committed bytes  = %10"PRIuPTR"\n", 
             committed);
   }
 #endif
 
 
-  fprintf(stderr, "max system bytes = %10lu\n",
+  fprintf(stderr, "max system bytes = %10"PRIuPTR"\n",
           (CHUNK_SIZE_T)(mi.usmblks));
-  fprintf(stderr, "system bytes     = %10lu\n",
+  fprintf(stderr, "system bytes     = %10"PRIuPTR"\n",
           (CHUNK_SIZE_T)(mi.arena + mi.hblkhd));
-  fprintf(stderr, "in use bytes     = %10lu\n",
+  fprintf(stderr, "in use bytes     = %10"PRIuPTR"\n",
           (CHUNK_SIZE_T)(mi.uordblks + mi.hblkhd));
 
 #if 0
@@ -4034,9 +4034,9 @@ void mSTATs() {
   {
     CHUNK_SIZE_T  kernel, user;
     if (cpuinfo (TRUE, &kernel, &user)) {
-      fprintf(stderr, "kernel ms        = %10lu\n", 
+      fprintf(stderr, "kernel ms        = %10"PRIuPTR"\n", 
               kernel);
-      fprintf(stderr, "user ms          = %10lu\n", 
+      fprintf(stderr, "user ms          = %10"PRIuPTR"\n", 
               user);
     }
   }
@@ -4095,9 +4095,9 @@ static mchunkptr mmap_malloc(mstate av, INTERNAL_SIZE_T nb) {
   char* mm;                       /* return value from mmap call*/
   CHUNK_SIZE_T    sum;            /* for updating stats */
   mchunkptr       p;              /* the allocated/returned chunk */
-  long            size;           
+  intptr_t            size;           
   INTERNAL_SIZE_T front_misalign; /* unusable bytes at front of new space */
-  long            correction;     
+  intptr_t            correction;     
   size_t          pagemask  = av->pagesize - 1;
 
   /*
@@ -4169,10 +4169,10 @@ static Void_t* sysmalloc(mstate av, CHUNK_SIZE_T nb) {
   INTERNAL_SIZE_T old_size;       /* its size */
   char*           old_end;        /* its end address */
 
-  long            size;           /* arg to first MORECORE or mmap call */
+  intptr_t            size;           /* arg to first MORECORE or mmap call */
   char*           brk;            /* return value from MORECORE */
 
-  long            correction;     /* arg to 2nd MORECORE call */
+  intptr_t            correction;     /* arg to 2nd MORECORE call */
   char*           snd_brk;        /* 2nd return val */
 
   INTERNAL_SIZE_T front_misalign; /* unusable bytes at front of new space */
@@ -4537,9 +4537,9 @@ static Void_t* sysmalloc(mstate av, CHUNK_SIZE_T nb) {
 */
 
 static int systrim(mstate av, size_t pad) {
-  long  top_size;        /* Amount of top-most memory */
-  long  extra;           /* Amount to release */
-  long  released;        /* Amount actually released */
+  intptr_t  top_size;        /* Amount of top-most memory */
+  intptr_t  extra;           /* Amount to release */
+  intptr_t  released;        /* Amount actually released */
   char* current_brk;     /* address returned by pre-check sbrk call */
   char* new_brk;         /* address returned by post-check sbrk call */
   size_t pagesz;
@@ -4785,8 +4785,8 @@ static int g_sl;
 #endif /* USE_MALLOC_LOCK */
 
 /* getpagesize for windows */
-static long getpagesize (void) {
-    static long g_pagesize = 0;
+static intptr_t getpagesize (void) {
+    static intptr_t g_pagesize = 0;
     if (! g_pagesize) {
         SYSTEM_INFO system_info;
         GetSystemInfo (&system_info);
@@ -4794,8 +4794,8 @@ static long getpagesize (void) {
     }
     return g_pagesize;
 }
-static long getregionsize (void) {
-    static long g_regionsize = 0;
+static intptr_t getregionsize (void) {
+    static intptr_t g_regionsize = 0;
     if (! g_regionsize) {
         SYSTEM_INFO system_info;
         GetSystemInfo (&system_info);
@@ -4809,12 +4809,12 @@ typedef struct _region_list_entry {
     void *top_allocated;
     void *top_committed;
     void *top_reserved;
-    long reserve_size;
+    intptr_t reserve_size;
     struct _region_list_entry *previous;
 } region_list_entry;
 
 /* Allocate and link a region entry in the region list */
-static int region_list_append (region_list_entry **last, void *base_reserved, long reserve_size) {
+static int region_list_append (region_list_entry **last, void *base_reserved, intptr_t reserve_size) {
     region_list_entry *next = HeapAlloc (GetProcessHeap (), 0, sizeof (region_list_entry));
     if (! next)
         return FALSE;
@@ -4845,8 +4845,8 @@ static int region_list_remove (region_list_entry **last) {
 
 /* sbrk for windows */
 static void *sbrk (long size) {
-    static long g_pagesize, g_my_pagesize;
-    static long g_regionsize, g_my_regionsize;
+    static intptr_t g_pagesize, g_my_pagesize;
+    static intptr_t g_regionsize, g_my_regionsize;
     static region_list_entry *g_last;
     void *result = (void *) MORECORE_FAILURE;
 #ifdef TRACE
@@ -4881,19 +4881,19 @@ static void *sbrk (long size) {
     /* Allocation requested? */
     if (size >= 0) {
         /* Allocation size is the requested size */
-        long allocate_size = size;
+        intptr_t allocate_size = size;
         /* Compute the size to commit */
-        long to_commit = (char *) g_last->top_allocated + allocate_size - (char *) g_last->top_committed;
+        intptr_t to_commit = (char *) g_last->top_allocated + allocate_size - (char *) g_last->top_committed;
         /* Do we reach the commit limit? */
         if (to_commit > 0) {
             /* Round size to commit */
-            long commit_size = CEIL (to_commit, g_my_pagesize);
+            intptr_t commit_size = CEIL (to_commit, g_my_pagesize);
             /* Compute the size to reserve */
-            long to_reserve = (char *) g_last->top_committed + commit_size - (char *) g_last->top_reserved;
+            intptr_t to_reserve = (char *) g_last->top_committed + commit_size - (char *) g_last->top_reserved;
             /* Do we reach the reserve limit? */
             if (to_reserve > 0) {
                 /* Compute the remaining size to commit in the current region */
-                long remaining_commit_size = (char *) g_last->top_reserved - (char *) g_last->top_committed;
+                intptr_t remaining_commit_size = (char *) g_last->top_reserved - (char *) g_last->top_committed;
                 if (remaining_commit_size > 0) {
                     /* Assert preconditions */
                     assert ((unsigned) g_last->top_committed % g_pagesize == 0);
@@ -4918,7 +4918,7 @@ static void *sbrk (long size) {
                     int found = FALSE;
                     MEMORY_BASIC_INFORMATION memory_info;
                     void *base_reserved;
-                    long reserve_size;
+                    intptr_t reserve_size;
                     do {
                         /* Assume contiguous memory */
                         contiguous = TRUE;
@@ -4981,7 +4981,7 @@ static void *sbrk (long size) {
 #endif
                     /* Did we get contiguous memory? */
                     if (contiguous) {
-                        long start_size = (char *) g_last->top_committed - (char *) g_last->top_allocated;
+                        intptr_t start_size = (char *) g_last->top_committed - (char *) g_last->top_allocated;
                         /* Adjust allocation size */
                         allocate_size -= start_size;
                         /* Adjust the regions allocation top */
@@ -5026,11 +5026,11 @@ static void *sbrk (long size) {
         result = (char *) g_last->top_allocated - size;
     /* Deallocation requested? */
     } else if (size < 0) {
-        long deallocate_size = - size;
-        /* As long as we have a region to release */
+        intptr_t deallocate_size = - size;
+        /* As intptr_t as we have a region to release */
         while ((char *) g_last->top_allocated - deallocate_size < (char *) g_last->top_reserved - g_last->reserve_size) {
             /* Get the size to release */
-            long release_size = g_last->reserve_size;
+            intptr_t release_size = g_last->reserve_size;
             /* Get the base address */
             void *base_reserved = (char *) g_last->top_reserved - release_size;
             /* Assert preconditions */
@@ -5053,10 +5053,10 @@ static void *sbrk (long size) {
                 goto sbrk_exit;
         } {
             /* Compute the size to decommit */
-            long to_decommit = (char *) g_last->top_committed - ((char *) g_last->top_allocated - deallocate_size);
+            intptr_t to_decommit = (char *) g_last->top_committed - ((char *) g_last->top_allocated - deallocate_size);
             if (to_decommit >= g_my_pagesize) {
                 /* Compute the size to decommit */
-                long decommit_size = FLOOR (to_decommit, g_my_pagesize);
+                intptr_t decommit_size = FLOOR (to_decommit, g_my_pagesize);
                 /*  Compute the base address */
                 void *base_committed = (char *) g_last->top_committed - decommit_size;
                 /* Assert preconditions */
@@ -5108,9 +5108,9 @@ sbrk_exit:
 }
 
 /* mmap for windows */
-static void *mmap (void *ptr, long size, long prot, long type, long handle, long arg) {
-    static long g_pagesize;
-    static long g_regionsize;
+static void *mmap (void *ptr, intptr_t size, intptr_t prot, intptr_t type, intptr_t handle, intptr_t arg) {
+    static intptr_t g_pagesize;
+    static intptr_t g_regionsize;
 #ifdef TRACE
     printf ("mmap %d\n", size);
 #endif
@@ -5147,9 +5147,9 @@ mmap_exit:
 }
 
 /* munmap for windows */
-static long munmap (void *ptr, long size) {
-    static long g_pagesize;
-    static long g_regionsize;
+static intptr_t munmap (void *ptr, intptr_t size) {
+    static intptr_t g_pagesize;
+    static intptr_t g_regionsize;
     int rc = MUNMAP_FAILURE;
 #ifdef TRACE
     printf ("munmap %p %d\n", ptr, size);

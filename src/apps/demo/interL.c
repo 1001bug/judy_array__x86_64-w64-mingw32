@@ -23,7 +23,7 @@ main()	// Simple JudyL demo, see "run_demo" script; @(#) $Revision: 4.4 $
 
 	while (Pvalue != NULL)
 	{
-	    printf("%12lu %5lu\n", index, *Pvalue);
+	    printf("%12"PRIuPTR" %5"PRIuPTR"\n", index, *Pvalue);
 	    JLN(Pvalue, Parray, index);		// find next saved index.
 	}
 	printf("Next:  ");  // fflush(stdout); ?

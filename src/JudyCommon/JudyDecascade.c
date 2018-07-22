@@ -40,7 +40,7 @@
 
 #include "JudyPrivate1L.h"
 
-DBGCODE(extern void JudyCheckSorted(Pjll_t Pjll, Word_t Pop1, long IndexSize);)
+DBGCODE(extern void JudyCheckSorted(Pjll_t Pjll, Word_t Pop1, intptr_t IndexSize);)
 
 
 // ****************************************************************************

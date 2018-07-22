@@ -99,7 +99,7 @@ main()
 		  PPValue != (PPvoid_t) NULL;
 		  PPValue  = JudySLNext  (PArray, Index, 0))
 	     {
-		 (void) printf ("  \"%s\" stored %lu time%s\n",
+		 (void) printf ("  \"%s\" stored %"PRIuPTR" time%s\n",
 				Index,  *((PWord_t) PPValue),
 				PLURAL (*((PWord_t) PPValue)));
 	     }
@@ -123,7 +123,7 @@ main()
 
 	++(*((PWord_t) PPValue));		// increment usage count.
 
-	(void) printf ("  \"%s\" stored %ld time%s\n",
+	(void) printf ("  \"%s\" stored %"PRIdPTR" time%s\n",
 		       Index,  *((PWord_t) PPValue),
 		       PLURAL (*((PWord_t) PPValue)));
 

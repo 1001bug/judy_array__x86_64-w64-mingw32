@@ -257,7 +257,7 @@ void
 JudyFree(void *PWord, Word_t Words)
 {
     free(PWord);
-    assert((long)(TotalJudyMalloc - Words) >= 0L);
+    assert((long)(TotalJudyMalloc - Words) >= ((Word_t)0));
 
     TotalJudyMalloc -= Words;
 
@@ -1569,7 +1569,7 @@ main(int argc, char *argv[])
             if (strcmp(optarg, "Hash") == 0)
             {
                 Method = M_Hash;
-                HTblsz = 1LU << 20;     // default 1.0+ million
+                HTblsz = ((Word_t)1) << 20;     // default 1.0+ million
             }
             if (strcmp(optarg, "JLHash") == 0)
             {
@@ -1709,7 +1709,7 @@ main(int argc, char *argv[])
 
     printf("# %s", argv[0]);
     if (nStrg != INFSTRGS)
-        printf(" -n%lu", nStrg);
+        printf(" -n%"PRIuPTR"", nStrg);
     switch (Method)
     {
     case M_Hash:
@@ -1737,8 +1737,8 @@ main(int argc, char *argv[])
         break;
     }
     if (HTblsz)
-        printf(" -H%lu", HTblsz);
-    printf(" -P%lu", PtsPdec);
+        printf(" -H%"PRIuPTR"", HTblsz);
+    printf(" -P%"PRIuPTR"", PtsPdec);
     printf(" -L%d", Passes);
     if (pFlag)
         printf(" -p");
@@ -1879,12 +1879,12 @@ main(int argc, char *argv[])
 
     if (Method == M_Hash)
     {
-        printf("# Allocate Hash table = %lu elements\n", HTblsz);
+        printf("# Allocate Hash table = %"PRIuPTR" elements\n", HTblsz);
     }
     if (Method == M_JLHash)
     {
         if (HTblsz)
-            printf("# JLHash table virtual size = %lu\n", HTblsz);
+            printf("# JLHash table virtual size = %"PRIuPTR"\n", HTblsz);
         else
             printf("# JLHash table virtual size = 4294967296\n");
     }
@@ -1933,10 +1933,10 @@ main(int argc, char *argv[])
     fid = NULL;
     assert(nStrg == LineCnt);
 
-    printf("# %lu (%.1f%%) non-Word_t aligned string buffers\n",
+    printf("# %"PRIuPTR" (%.1f%%) non-Word_t aligned string buffers\n",
            aCount, (double)aCount / (double)LineCnt * 100.0);
 
-    printf("# Ram used for input data = %lu bytes\n", StringMemory);
+    printf("# Ram used for input data = %"PRIuPTR" bytes\n", StringMemory);
 
     printf("# Average string length = %.1f bytes\n",
            (double)(StrTot - LineCnt) / LineCnt);
@@ -1960,7 +1960,7 @@ main(int argc, char *argv[])
             MALLOCERROR;
 
         printf
-            ("# %lu bytes malloc() for 'cached' strings for Get measurement\n",
+            ("# %"PRIuPTR" bytes malloc() for 'cached' strings for Get measurement\n",
              Strsiz_);
     }
 
@@ -2214,11 +2214,11 @@ main(int argc, char *argv[])
 //            if (Delta > TValues)
 //                ReadLin = Delta;        // use the Delta
 
-            Printf(" %11lu", StrNumb);  // Total stored
-            Printf(" %10lu", ReadLin);  // Number to read back
+            Printf(" %11"PRIuPTR"", StrNumb);  // Total stored
+            Printf(" %10"PRIuPTR"", ReadLin);  // Number to read back
             Begin = gStored - Begin;    // actual STORED
             assert(lines == Delta);
-            Printf(" %8lu", Delta - Begin);     // Duplicate strings
+            Printf(" %8"PRIuPTR"", Delta - Begin);     // Duplicate strings
 
 //          Average time per line to store (including duplicate strings)
             Mult = DeltaUSec / (double)Delta;
@@ -2393,7 +2393,7 @@ main(int argc, char *argv[])
         if (Method == M_Print)
             exit(0);
 
-        Printf("# Total Duplicate strings = %lu\n", nStrg - gStored);
+        Printf("# Total Duplicate strings = %"PRIuPTR"\n", nStrg - gStored);
 
 //=======================================================================
 //  Delete loop
@@ -2514,17 +2514,17 @@ main(int argc, char *argv[])
 //  average time per line to delete (including duplicate strings)
         if (Bytes)                      // Measured freed bytes?
         {
-            Printf("#                      returned %lu bytes\n", Bytes);
+            Printf("#                      returned %"PRIuPTR" bytes\n", Bytes);
         }
         if (TotalJudyMalloc)            // Any bytes left after free?
         {
             printf
-                ("# !!! BUG, %lu bytes not deleted in *Free()\n",
+                ("# !!! BUG, %"PRIuPTR" bytes not deleted in *Free()\n",
                  TotalJudyMalloc * sizeof(Word_t));
         }
-        if (DeltaUSec != -1.0)          // Measured how long to free?
+        if (DeltaUSec != -1.0)          // Measured how intptr_t to free?
         {
-            Printf("# Free %lu strings, %0.3f uSecs Ave/string\n",
+            Printf("# Free %"PRIuPTR" strings, %0.3f uSecs Ave/string\n",
                    gStored, DeltaUSec / (double)gStored);
         }
         Printf("\n");
@@ -2538,7 +2538,7 @@ main(int argc, char *argv[])
         {
             StrNumb += Pms[grp].ms_delta;
 
-            printf(" %11lu", StrNumb);  // Total stored
+            printf(" %11"PRIuPTR"", StrNumb);  // Total stored
             printf("      0     0");    // place holder
             printf(" %7.3f", Pms[grp].ms_mininsert);
             printf(" %7.3f", Pms[grp].ms_minretrive);

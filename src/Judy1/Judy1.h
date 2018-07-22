@@ -64,7 +64,7 @@
 //   field.  In the case of Leaves, the same number applies to the Index sizes.
 //
 // - The representation of many numbers as hex is a relatively safe and
-//   portable way to get desired bitpatterns as unsigned longs.
+//   portable way to get desired bitpatterns as uintptr_ts.
 //
 // - Some preprocessors cant handle single apostrophe characters within
 //   #ifndef code, so here, use delete all instead.

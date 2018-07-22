@@ -213,9 +213,9 @@ JudyFreeVirtual(void *PWord, Word_t Words)
 // Common macro to handle a failure
 #define FAILURE(STR, UL)                                                \
 {                                                                       \
-printf(        "\nError: %s %lu, file='%s', 'function='%s', line %d\n", \
+printf(        "\nError: %s %"PRIuPTR", file='%s', 'function='%s', line %d\n", \
         STR, (Word_t)(UL), __FILE__, __FUNCTI0N__, __LINE__);           \
-fprintf(stderr,"\nError: %s %lu, file='%s', 'function='%s', line %d\n", \
+fprintf(stderr,"\nError: %s %"PRIuPTR", file='%s', 'function='%s', line %d\n", \
         STR, (Word_t)(UL), __FILE__, __FUNCTI0N__, __LINE__);           \
         exit(1);                                                        \
 }
@@ -384,7 +384,7 @@ Word_t    ErrorFlag = 0;
 Word_t    PtsPdec = 40;                 // measurement points per decade
 
 // Stuff for LFSR (pseudo random number generator)
-Word_t    RandomBit = ~0UL / 2 + 1;
+Word_t    RandomBit = ~((Word_t)0) / 2 + 1;
 Word_t    BValue = sizeof(Word_t) * 8;
 Word_t    Magic;
 
@@ -492,7 +492,7 @@ main(int argc, char *argv[])
                 || (MagicList[BValue] == 0) || (BValue > (sizeof(Word_t) * 8)))
             {
                 ErrorFlag++;
-                printf("\nIllegal number of random bits of %lu !!!\n", BValue);
+                printf("\nIllegal number of random bits of %"PRIuPTR" !!!\n", BValue);
             }
             break;
 
@@ -571,18 +571,18 @@ main(int argc, char *argv[])
         JHFlag = JLFlag = J1Flag = 1;
 
 //  Set number of Random bits in LFSR
-    RandomBit = 1UL << (BValue - 1);
+    RandomBit = ((Word_t)1) << (BValue - 1);
     Magic = MagicList[BValue];
 
     if (nElms > ((RandomBit - 2) * 2))
     {
         printf
-            ("# Number = -n%lu of Indexes reduced to max expanse of Random numbers\n",
+            ("# Number = -n%"PRIuPTR" of Indexes reduced to max expanse of Random numbers\n",
              nElms);
         nElms = ((RandomBit - 2) * 2);
     }
 
-    printf("# TITLE %s -n%lu -S%lu -T%lu -B%lu -P%lu",
+    printf("# TITLE %s -n%"PRIuPTR" -S%"PRIuPTR" -T%"PRIuPTR" -B%"PRIuPTR" -P%"PRIuPTR"",
            argv[0], nElms, SkipN, TValues, BValue, PtsPdec);
 
 //        case 'b':              // May not work past 35 bits if changed
@@ -774,7 +774,7 @@ main(int argc, char *argv[])
         if (TValues)
             Meas = (Pop1 < TValues) ? Pop1 : TValues;
 
-        printf("%10lu %9lu", Pop1, Meas);
+        printf("%10"PRIuPTR" %9"PRIuPTR"", Pop1, Meas);
         printf(" %6.3f", DeltaUSec1);
         printf(" %6.3f", DeltaUSecL);
         printf(" %6.3f", DeltaUSecHS);
@@ -821,20 +821,20 @@ main(int argc, char *argv[])
             fflush(NULL);
 
 //          Test J1P, JLP
-            TestJudyPrev(J1, JL, ~0UL, Meas);
+            TestJudyPrev(J1, JL, ~((Word_t)0), Meas);
 //          TestJudyPrev(J1, JL, HighIndex, Meas);
             printf(" %6.3f", DeltaUSec1);
             printf(" %6.3f", DeltaUSecL);
             fflush(NULL);
 
 //          Test J1NE, JLNE
-            TestJudyNextEmpty(J1, JL, 0UL, Meas);
+            TestJudyNextEmpty(J1, JL, ((Word_t)0), Meas);
             printf(" %6.3f", DeltaUSec1);
             printf(" %6.3f", DeltaUSecL);
             fflush(NULL);
 
 //          Test J1PE, JLPE
-            TestJudyPrevEmpty(J1, JL, ~0UL, Meas);
+            TestJudyPrevEmpty(J1, JL, ~((Word_t)0), Meas);
             printf(" %6.3f", DeltaUSec1);
             printf(" %6.3f", DeltaUSecL);
             fflush(NULL);
@@ -890,7 +890,7 @@ main(int argc, char *argv[])
     {
         Word_t    Cnt1 = Count1;
         if (Cnt1 == 0)
-            Cnt1 = 1UL;
+            Cnt1 = ((Word_t)1);
 
         STARTTm;
 
@@ -903,7 +903,7 @@ main(int argc, char *argv[])
         ENDTm(DeltaUSec1);
         DeltaUSec1 /= (double)Cnt1;
 
-        printf("# Judy1FreeArray:  %lu, %0.3f bytes/Index, %0.3f USec/Index\n",
+        printf("# Judy1FreeArray:  %"PRIuPTR", %0.3f bytes/Index, %0.3f USec/Index\n",
                Count1, (double)Bytes / (double)Cnt1, DeltaUSec1);
     }
 
@@ -911,7 +911,7 @@ main(int argc, char *argv[])
     {
         Word_t    CntL = CountL;
         if (CntL == 0)
-            CntL = 1UL;
+            CntL = ((Word_t)1);
 
         STARTTm;
 
@@ -924,13 +924,13 @@ main(int argc, char *argv[])
         ENDTm(DeltaUSecL);
         DeltaUSecL /= (double)CntL;
 
-        printf("# JudyLFreeArray:  %lu, %0.3f bytes/Index, %0.3f USec/Index\n",
+        printf("# JudyLFreeArray:  %"PRIuPTR", %0.3f bytes/Index, %0.3f USec/Index\n",
                CountL, (double)Bytes / (double)CntL, DeltaUSecL);
     }
 //    if (CountHS)
     {
 //        Word_t CntHS = CountHS;
-//        if (CntHS == 0) CntHS = 1UL;
+//        if (CntHS == 0) CntHS = ((Word_t)1);
 
         STARTTm;
 
@@ -943,7 +943,7 @@ main(int argc, char *argv[])
         ENDTm(DeltaUSecHS);
         DeltaUSecHS /= (double)nElms;   // no Counts yet
 
-        printf("# JudyHSFreeArray: %lu, %0.3f bytes/Index, %0.3f USec/Index\n",
+        printf("# JudyHSFreeArray: %"PRIuPTR", %0.3f bytes/Index, %0.3f USec/Index\n",
                nElms, (double)Bytes / (double)nElms, DeltaUSecHS);
     }
     exit(0);
@@ -1076,7 +1076,7 @@ TestJudyIns(void **J1, void **JL, void **JH, Word_t Seed, Word_t Elements)
                 JLI(PValue, *JL, TstIndex);
                 if (*PValue == TstIndex)
                 {
-                    printf("Index = 0x%0lx, ", TstIndex);
+                    printf("Index = 0x%0"PRIxPTR", ", TstIndex);
                     FAILURE("JudyLIns failed - DUP Index", TstIndex);
                 }
                 *PValue = TstIndex;     // save Index in Value
@@ -1084,7 +1084,7 @@ TestJudyIns(void **J1, void **JL, void **JH, Word_t Seed, Word_t Elements)
                 PValue = (PWord_t)JudyLGet(*JL, TstIndex, PJE0);
                 if (PValue == NULL)
                 {
-                    printf("Index = 0x%0lx, ", TstIndex);
+                    printf("Index = 0x%0"PRIxPTR", ", TstIndex);
                     FAILURE("JudyLGet failed", TstIndex);
                 }
 #endif // DIAG
@@ -1170,7 +1170,7 @@ TestJudyIns(void **J1, void **JL, void **JH, Word_t Seed, Word_t Elements)
 Word_t
 TestJudyDup(void **J1, void **JL, void **JH, Word_t Seed, Word_t Elements)
 {
-    Word_t    LowIndex = ~0UL;
+    Word_t    LowIndex = ~((Word_t)0);
     Word_t    TstIndex;
     Word_t    elm;
     Word_t   *PValue;
@@ -1189,7 +1189,7 @@ TestJudyDup(void **J1, void **JL, void **JH, Word_t Seed, Word_t Elements)
     if (J1Flag)
     {
         MalFlag = JudyMal1;
-        LowIndex = ~0UL;
+        LowIndex = ~((Word_t)0);
         for (DDel = 1e40, icnt = ICNT, lp = 0; lp < Loops; lp++)
         {
             STARTTm;
@@ -1230,7 +1230,7 @@ TestJudyDup(void **J1, void **JL, void **JH, Word_t Seed, Word_t Elements)
     if (JLFlag)
     {
         MalFlag = JudyMalL;
-        LowIndex = ~0UL;
+        LowIndex = ~((Word_t)0);
         for (DDel = 1e40, lp = 0; lp < Loops; lp++)
         {
             STARTTm;
@@ -1248,7 +1248,7 @@ TestJudyDup(void **J1, void **JL, void **JH, Word_t Seed, Word_t Elements)
 
                 JLI(PValue, *JL, TstIndex);
                 if (PValue == (Word_t *)NULL)
-                    FAILURE("JudyLGet ret PValue = NULL", 0L);
+                    FAILURE("JudyLGet ret PValue = NULL", ((Word_t)0));
                 if (*PValue != TstIndex)
                     FAILURE("JudyLGet ret wrong Value at", elm);
             }
@@ -1273,7 +1273,7 @@ TestJudyDup(void **J1, void **JL, void **JH, Word_t Seed, Word_t Elements)
     if (JHFlag)
     {
         MalFlag = JudyMalHS;
-        LowIndex = ~0UL;
+        LowIndex = ~((Word_t)0);
         for (DDel = 1e40, lp = 0; lp < Loops; lp++)
         {
             STARTTm;
@@ -1291,7 +1291,7 @@ TestJudyDup(void **J1, void **JL, void **JH, Word_t Seed, Word_t Elements)
 
                 JHSI(PValue, *JH, &TstIndex, sizeof(Word_t));
                 if (PValue == (Word_t *)NULL)
-                    FAILURE("JudyHSGet ret PValue = NULL", 0L);
+                    FAILURE("JudyHSGet ret PValue = NULL", ((Word_t)0));
                 if (*PValue != TstIndex)
                     FAILURE("JudyHSGet ret wrong Value at", elm);
             }
@@ -1319,7 +1319,7 @@ TestJudyDup(void **J1, void **JL, void **JH, Word_t Seed, Word_t Elements)
 Word_t
 TestJudyGet(void *J1, void *JL, void *JH, Word_t Seed, Word_t Elements)
 {
-    Word_t    LowIndex = ~0UL;
+    Word_t    LowIndex = ~((Word_t)0);
     Word_t    TstIndex;
     Word_t    elm;
     Word_t   *PValue;
@@ -1339,7 +1339,7 @@ TestJudyGet(void *J1, void *JL, void *JH, Word_t Seed, Word_t Elements)
     if (J1Flag)
     {
         MalFlag = JudyMal1;
-        LowIndex = ~0UL;
+        LowIndex = ~((Word_t)0);
         for (DDel = 1e40, icnt = ICNT, lp = 0; lp < Loops; lp++)
         {
             STARTTm;
@@ -1362,7 +1362,7 @@ TestJudyGet(void *J1, void *JL, void *JH, Word_t Seed, Word_t Elements)
                 if (Rc != 1)
                 {
                     printf
-                        ("\nJudy1Test wrong Rc = %d, Index = 0x%lx, elm = %lu",
+                        ("\nJudy1Test wrong Rc = %d, Index = 0x%"PRIxPTR", elm = %"PRIuPTR"",
                          Rc, TstIndex, elm);
                     FAILURE("Judy1Test Rc != 1", Rc);
                 }
@@ -1388,7 +1388,7 @@ TestJudyGet(void *J1, void *JL, void *JH, Word_t Seed, Word_t Elements)
     if (JLFlag)
     {
         MalFlag = JudyMalL;
-        LowIndex = ~0UL;
+        LowIndex = ~((Word_t)0);
         for (DDel = 1e40, lp = 0; lp < Loops; lp++)
         {
             STARTTm;
@@ -1411,12 +1411,12 @@ TestJudyGet(void *J1, void *JL, void *JH, Word_t Seed, Word_t Elements)
 
                 if (PValue == (Word_t *)NULL)
                 {
-                    printf("\nJudyGet Index = 0x%lx", TstIndex);
-                    FAILURE("JudyLGet ret PValue = NULL", 0L);
+                    printf("\nJudyGet Index = 0x%"PRIxPTR"", TstIndex);
+                    FAILURE("JudyLGet ret PValue = NULL", ((Word_t)0));
                 }
                 if (*PValue != TstIndex)
                 {
-                    printf("JudyLGet returned Value=0x%lx, should be=0x%lx\n",
+                    printf("JudyLGet returned Value=0x%"PRIxPTR", should be=0x%"PRIxPTR"\n",
                            *PValue, TstIndex);
                     FAILURE("JudyLGet ret wrong Value at", elm);
                 }
@@ -1442,7 +1442,7 @@ TestJudyGet(void *J1, void *JL, void *JH, Word_t Seed, Word_t Elements)
     if (JHFlag)
     {
         MalFlag = JudyMalHS;
-        LowIndex = ~0UL;
+        LowIndex = ~((Word_t)0);
         for (DDel = 1e40, lp = 0; lp < Loops; lp++)
         {
             STARTTm;
@@ -1460,7 +1460,7 @@ TestJudyGet(void *J1, void *JL, void *JH, Word_t Seed, Word_t Elements)
 
                 JHSG(PValue, JH, &TstIndex, sizeof(Word_t));
                 if (PValue == (Word_t *)NULL)
-                    FAILURE("JudyHSGet ret PValue = NULL", 0L);
+                    FAILURE("JudyHSGet ret PValue = NULL", ((Word_t)0));
                 if (*PValue != TstIndex)
                     FAILURE("JudyHSGet ret wrong Value at", elm);
             }
@@ -1597,7 +1597,7 @@ TestJudyCount(void *J1, void *JL, Word_t LowIndex, Word_t Elements)
 
                 if (Count1 != (elm + 1))
                 {
-                    printf("Count1 = %lu, elm +1 = %lu\n", Count1, elm + 1);
+                    printf("Count1 = %"PRIuPTR", elm +1 = %"PRIuPTR"\n", Count1, elm + 1);
                     FAILURE("J1C at", elm);
                 }
 #ifdef SKIPMACRO
@@ -1640,7 +1640,7 @@ TestJudyCount(void *J1, void *JL, Word_t LowIndex, Word_t Elements)
 #endif // SKIPMACRO
                 if (CountL != (elm + 1))
                 {
-                    printf("CountL = %lu, elm +1 = %lu\n", CountL, elm + 1);
+                    printf("CountL = %"PRIuPTR", elm +1 = %"PRIuPTR"\n", CountL, elm + 1);
                     FAILURE("JLC at", elm);
                 }
 #ifdef SKIPMACRO
@@ -1706,7 +1706,7 @@ TestJudyNext(void *J1, void *JL, Word_t LowIndex, Word_t Elements)
             {
                 if (Rc != 1)
                 {
-                    printf("\nElements = %lu, elm = %lu\n", Elements, elm);
+                    printf("\nElements = %"PRIuPTR", elm = %"PRIuPTR"\n", Elements, elm);
                     FAILURE("Judy1Next Rc != 1 =", Rc);
                 }
 #ifdef SKIPMACRO
@@ -1754,12 +1754,12 @@ TestJudyNext(void *J1, void *JL, Word_t LowIndex, Word_t Elements)
                 Word_t    Prev;
                 if (PValue == NULL)
                 {
-                    printf("\nElements = %lu, elm = %lu\n", Elements, elm);
+                    printf("\nElements = %"PRIuPTR", elm = %"PRIuPTR"\n", Elements, elm);
                     FAILURE("JudyLNext ret NULL PValue at", elm);
                 }
                 if (*PValue != JLindex)
                 {
-                    printf("\n*PValue=0x%lx, JLindex=0x%lx\n", *PValue,
+                    printf("\n*PValue=0x%"PRIxPTR", JLindex=0x%"PRIxPTR"\n", *PValue,
                            JLindex);
                     FAILURE("JudyLNext ret bad *PValue at", elm);
                 }
@@ -1771,7 +1771,7 @@ TestJudyNext(void *J1, void *JL, Word_t LowIndex, Word_t Elements)
 #endif // SKIPMACRO
                 if (JLindex == Prev)
                 {
-                    printf("OOPs, JLN did not advance 0x%lx\n", Prev);
+                    printf("OOPs, JLN did not advance 0x%"PRIxPTR"\n", Prev);
                     FAILURE("JudyLNext ret did not advance", Prev);
                 }
             }
@@ -1885,7 +1885,7 @@ TestJudyPrev(void *J1, void *JL, Word_t HighIndex, Word_t Elements)
             {
                 if (PValue == NULL)
                 {
-                    printf("\nElements = %lu, elm = %lu\n", Elements, elm);
+                    printf("\nElements = %"PRIuPTR", elm = %"PRIuPTR"\n", Elements, elm);
                     FAILURE("JudyLPrev ret NULL PValue at", elm);
                 }
                 if (*PValue != JLindex)

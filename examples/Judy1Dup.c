@@ -34,7 +34,7 @@ Judy1Dup(PPvoid_t PPDest, Pvoid_t PSource, JError_t * PJError)
     Word_t    kindex;                   // Key/index
     int       Ins_rv = 0;               // Insert return value
 
-    for (kindex = 0L, Ins_rv = Judy1First(PSource, &kindex, PJError);
+    for (kindex = ((Word_t)0), Ins_rv = Judy1First(PSource, &kindex, PJError);
          Ins_rv == 1; Ins_rv = Judy1Next(PSource, &kindex, PJError))
     {
         Ins_rv = Judy1Set(&newJArray, kindex, PJError);

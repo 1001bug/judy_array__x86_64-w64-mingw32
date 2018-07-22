@@ -123,17 +123,17 @@ main()
         if (*PValue)                    // check if duplicate
         {
             Dups++;                     // count duplicates
-            printf("Duplicate lines %lu:%lu:%s", *PValue, LineNumb, Index);
+            printf("Duplicate lines %"PRIuPTR":%"PRIuPTR":%s", *PValue, LineNumb, Index);
         }
         else
         {
             *PValue = LineNumb;         // store Line number
         }
     }
-    printf("%lu Duplicates, free JudyHS array of %lu Lines\n", 
+    printf("%"PRIuPTR" Duplicates, free JudyHS array of %"PRIuPTR" Lines\n", 
                     Dups, LineNumb - Dups);
     JHSFA(Bytes, PJArray);              // free array
-    printf("The JudyHS array allocated %lu bytes of memory\n", Bytes);
+    printf("The JudyHS array allocated %"PRIuPTR" bytes of memory\n", Bytes);
     return (0);
 }
 #endif // EXAMPLE_CODE
@@ -190,7 +190,7 @@ typedef struct L_EAFSTRING
 //
 #define        COPYSTRING8toWORD(WORD,STR,LEN)          \
 {                                                       \
-    WORD = 0UL;                                         \
+    WORD = ((Word_t)0);                                         \
     switch(LEN)                                         \
     {                                                   \
     default:    /* eight and greater */                 \
@@ -465,7 +465,7 @@ JudyHSIns(PPvoid_t PPArray,             // ^ to JudyHashArray name
 
 //  string can only be NULL if Len is 0.
 
-    if ((String == (uint8_t *) NULL) && (Len != 0UL))
+    if ((String == (uint8_t *) NULL) && (Len != ((Word_t)0)))
     {
         JU_SET_ERRNO(PJError, JU_ERRNO_NULLPINDEX);
         return (PPJERR);

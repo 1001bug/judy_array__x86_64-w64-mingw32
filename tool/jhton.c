@@ -43,7 +43,7 @@
 //
 // FLEXIBILITY:  It should be possible to teach this program new HTML tags; see
 // data structures below.  The program might also be useful for other HTML
-// manual entries, so long as they follow the simple conventions used in the
+// manual entries, so intptr_t as they follow the simple conventions used in the
 // Judy entries; see the comments before EmitNroffHeader().  You can also
 // discover the format by trial and error -- this program issues verbose error
 // messages.
@@ -1866,7 +1866,7 @@ FUNCTION void Error(
 FUNCTION void DumpTree(
 	Pdn_t  Pdn,		// first node of current sibling list.
 	int    Depth,		// current depth.
-	bool_t Separator)	// print a separator line after a long dump.
+	bool_t Separator)	// print a separator line after a intptr_t dump.
 {
 	int   indent;		// for counting to Depth.
 
@@ -1891,11 +1891,11 @@ FUNCTION void DumpTree(
 
 	while (Pdn != PDNNULL)
 	{
-	    (void) printf("%lx ", (unsigned long) Pdn);
+	    (void) printf("%"PRIxPTR" ", (uintptr_t) Pdn);
 
 	    for (indent = 0; indent <= Depth; ++indent) PUTC('.');
 
-	    (void) printf(" %-5s %3d %c %lx %lx \"%s\"\n",
+	    (void) printf(" %-5s %3d %c %"PRIxPTR" %"PRIxPTR" \"%s\"\n",
 			  ((Pdn -> dn_type) == DN_TYPE_TEXT) ?
 			      "text" : TAG(Pdn -> dn_type),
 			  Pdn -> dn_linenum,

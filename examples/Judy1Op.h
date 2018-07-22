@@ -5,9 +5,9 @@
 //
 // HEADER FILE FOR EXPORTED FEATURES FROM Judy1Op().
 
-#define	JUDY1OP_AND    1L
-#define	JUDY1OP_OR     2L
-#define	JUDY1OP_ANDNOT 3L
+#define	JUDY1OP_AND    ((Word_t)1)
+#define	JUDY1OP_OR     ((Word_t)2)
+#define	JUDY1OP_ANDNOT ((Word_t)3)
 
 extern int Judy1Op(PPvoid_t PPDest, Pvoid_t PSet1, Pvoid_t PSet2,
                    Word_t Operation, JError_t * PJError);

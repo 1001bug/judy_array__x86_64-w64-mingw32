@@ -55,7 +55,7 @@
 // Note:  To keep the MALLOC macro faster and simpler, set j__uMaxWords to
 // MAXINT, not zero, by default.
 
-Word_t j__uMaxWords = ~0UL;
+Word_t j__uMaxWords = ~((Word_t)0);
 
 // This macro hides the faking of a malloc failure:
 //
@@ -64,7 +64,7 @@ Word_t j__uMaxWords = ~0UL;
 // exactly where you might assume, but it shouldnt matter.
 
 #define MALLOC(MallocFunc,WordsPrev,WordsNow) \
-        (((WordsPrev) > j__uMaxWords) ? 0UL : MallocFunc(WordsNow))
+        (((WordsPrev) > j__uMaxWords) ? ((Word_t)0) : MallocFunc(WordsNow))
 
 // Clear words starting at address:
 //
@@ -75,7 +75,7 @@ Word_t j__uMaxWords = ~0UL;
         {                                       \
             Word_t  Words__ = (Words);          \
             PWord_t Addr__  = (PWord_t) (Addr); \
-            while (Words__--) *Addr__++ = 0UL;  \
+            while (Words__--) *Addr__++ = ((Word_t)0);  \
         }
 
 #ifdef TRACEMI
@@ -83,7 +83,7 @@ Word_t j__uMaxWords = ~0UL;
 // TRACING SUPPORT:
 //
 // Note:  For TRACEMI, use a format for address printing compatible with other
-// tracing facilities; in particular, %x not %lx, to truncate the "noisy" high
+// tracing facilities; in particular, %x not %"PRIxPTR", to truncate the "noisy" high
 // part on 64-bit systems.
 //
 // TBD: The trace macros need fixing for alternate address types.
@@ -93,7 +93,7 @@ Word_t j__uMaxWords = ~0UL;
 
 #include <stdio.h>
 
-static Word_t j__udyMemSequence = 0L;   // event sequence number.
+static Word_t j__udyMemSequence = ((Word_t)0);   // event sequence number.
 
 #define TRACE_ALLOC5(a,b,c,d,e)   (void) printf(a, (b), c, d)
 #define TRACE_FREE5( a,b,c,d,e)   (void) printf(a, (b), c, d)
@@ -109,15 +109,15 @@ static Word_t j__udyMemSequence = 0L;   // event sequence number.
 #define b_pw cJU_BYTESPERWORD
 
 #define TRACE_ALLOC5(a,b,c,d,e)   \
-            (void) printf("a %lx %lx %lx\n", (b), (d) * b_pw, e)
+            (void) printf("a %"PRIxPTR" %"PRIxPTR" %"PRIxPTR"\n", (b), (d) * b_pw, e)
 #define TRACE_FREE5( a,b,c,d,e)   \
-            (void) printf("f %lx %lx %lx\n", (b), (d) * b_pw, e)
+            (void) printf("f %"PRIxPTR" %"PRIxPTR" %"PRIxPTR"\n", (b), (d) * b_pw, e)
 #define TRACE_ALLOC6(a,b,c,d,e,f)         \
-            (void) printf("a %lx %lx %lx\n", (b), (e) * b_pw, f)
+            (void) printf("a %"PRIxPTR" %"PRIxPTR" %"PRIxPTR"\n", (b), (e) * b_pw, f)
 #define TRACE_FREE6( a,b,c,d,e,f)         \
-            (void) printf("f %lx %lx %lx\n", (b), (e) * b_pw, f)
+            (void) printf("f %"PRIxPTR" %"PRIxPTR" %"PRIxPTR"\n", (b), (e) * b_pw, f)
 
-static Word_t j__udyMemSequence = 0L;   // event sequence number.
+static Word_t j__udyMemSequence = ((Word_t)0);   // event sequence number.
 
 #else
 
@@ -137,8 +137,8 @@ static Word_t j__udyMemSequence = 0L;   // event sequence number.
 #endif
 
 #ifdef MALLOCBITS
-#define MALLOCBITS_VALUE 0x3    // bit pattern to use.
-#define MALLOCBITS_MASK  0x7    // note: matches mask__ in JudyPrivate.h.
+#define MALLOCBITS_VALUE ((Word_t)0x3)    // bit pattern to use.
+#define MALLOCBITS_MASK  ((Word_t)0x7)    // note: matches mask__ in JudyPrivate.h.
 
 #define MALLOCBITS_SET( Type,Addr) \
         ((Addr) = (Type) ((Word_t) (Addr) |  MALLOCBITS_VALUE))
@@ -193,7 +193,7 @@ FUNCTION Pjpm_t j__udyAllocJPM(void)
             Pjpm->jpm_TotalMemWords = Words;
         }
 
-        TRACE_ALLOC5("0x%x %8lu = j__udyAllocJPM(), Words = %lu\n",
+        TRACE_ALLOC5("0x%x %8"PRIuPTR" = j__udyAllocJPM(), Words = %"PRIuPTR"\n",
                      Pjpm, j__udyMemSequence++, Words, cJU_LEAFW_MAXPOP1 + 1);
         // MALLOCBITS_SET(Pjpm_t, Pjpm);  // see above.
         return(Pjpm);
@@ -216,7 +216,7 @@ FUNCTION Pjbl_t j__udyAllocJBL(Pjpm_t Pjpm)
         }
         else { J__UDYSETALLOCERROR(PjblRaw); }
 
-        TRACE_ALLOC5("0x%x %8lu = j__udyAllocJBL(), Words = %lu\n", PjblRaw,
+        TRACE_ALLOC5("0x%x %8"PRIuPTR" = j__udyAllocJBL(), Words = %"PRIuPTR"\n", PjblRaw,
                      j__udyMemSequence++, Words, (Pjpm->jpm_Pop0) + 2);
         MALLOCBITS_SET(Pjbl_t, PjblRaw);
         return(PjblRaw);
@@ -239,7 +239,7 @@ FUNCTION Pjbb_t j__udyAllocJBB(Pjpm_t Pjpm)
         }
         else { J__UDYSETALLOCERROR(PjbbRaw); }
 
-        TRACE_ALLOC5("0x%x %8lu = j__udyAllocJBB(), Words = %lu\n", PjbbRaw,
+        TRACE_ALLOC5("0x%x %8"PRIuPTR" = j__udyAllocJBB(), Words = %"PRIuPTR"\n", PjbbRaw,
                      j__udyMemSequence++, Words, (Pjpm->jpm_Pop0) + 2);
         MALLOCBITS_SET(Pjbb_t, PjbbRaw);
         return(PjbbRaw);
@@ -260,7 +260,7 @@ FUNCTION Pjp_t j__udyAllocJBBJP(Word_t NumJPs, Pjpm_t Pjpm)
         }
         else { J__UDYSETALLOCERROR(PjpRaw); }
 
-        TRACE_ALLOC6("0x%x %8lu = j__udyAllocJBBJP(%lu), Words = %lu\n", PjpRaw,
+        TRACE_ALLOC6("0x%x %8"PRIuPTR" = j__udyAllocJBBJP(%"PRIuPTR"), Words = %"PRIuPTR"\n", PjpRaw,
                      j__udyMemSequence++, NumJPs, Words, (Pjpm->jpm_Pop0) + 2);
         MALLOCBITS_SET(Pjp_t, PjpRaw);
         return(PjpRaw);
@@ -282,7 +282,7 @@ FUNCTION Pjbu_t j__udyAllocJBU(Pjpm_t Pjpm)
         }
         else { J__UDYSETALLOCERROR(PjbuRaw); }
 
-        TRACE_ALLOC5("0x%x %8lu = j__udyAllocJBU(), Words = %lu\n", PjbuRaw,
+        TRACE_ALLOC5("0x%x %8"PRIuPTR" = j__udyAllocJBU(), Words = %"PRIuPTR"\n", PjbuRaw,
                      j__udyMemSequence++, Words, (Pjpm->jpm_Pop0) + 2);
         MALLOCBITS_SET(Pjbu_t, PjbuRaw);
         return(PjbuRaw);
@@ -305,7 +305,7 @@ FUNCTION Pjll_t j__udyAllocJLL1(Word_t Pop1, Pjpm_t Pjpm)
         }
         else { J__UDYSETALLOCERROR(PjllRaw); }
 
-        TRACE_ALLOC6("0x%x %8lu = j__udyAllocJLL1(%lu), Words = %lu\n", PjllRaw,
+        TRACE_ALLOC6("0x%x %8"PRIuPTR" = j__udyAllocJLL1(%"PRIuPTR"), Words = %"PRIuPTR"\n", PjllRaw,
                      j__udyMemSequence++, Pop1, Words, (Pjpm->jpm_Pop0) + 2);
         MALLOCBITS_SET(Pjll_t, PjllRaw);
         return(PjllRaw);
@@ -328,7 +328,7 @@ FUNCTION Pjll_t j__udyAllocJLL2(Word_t Pop1, Pjpm_t Pjpm)
         }
         else { J__UDYSETALLOCERROR(PjllRaw); }
 
-        TRACE_ALLOC6("0x%x %8lu = j__udyAllocJLL2(%lu), Words = %lu\n", PjllRaw,
+        TRACE_ALLOC6("0x%x %8"PRIuPTR" = j__udyAllocJLL2(%"PRIuPTR"), Words = %"PRIuPTR"\n", PjllRaw,
                      j__udyMemSequence++, Pop1, Words, (Pjpm->jpm_Pop0) + 2);
         MALLOCBITS_SET(Pjll_t, PjllRaw);
         return(PjllRaw);
@@ -349,7 +349,7 @@ FUNCTION Pjll_t j__udyAllocJLL3(Word_t Pop1, Pjpm_t Pjpm)
         }
         else { J__UDYSETALLOCERROR(PjllRaw); }
 
-        TRACE_ALLOC6("0x%x %8lu = j__udyAllocJLL3(%lu), Words = %lu\n", PjllRaw,
+        TRACE_ALLOC6("0x%x %8"PRIuPTR" = j__udyAllocJLL3(%"PRIuPTR"), Words = %"PRIuPTR"\n", PjllRaw,
                      j__udyMemSequence++, Pop1, Words, (Pjpm->jpm_Pop0) + 2);
         MALLOCBITS_SET(Pjll_t, PjllRaw);
         return(PjllRaw);
@@ -372,7 +372,7 @@ FUNCTION Pjll_t j__udyAllocJLL4(Word_t Pop1, Pjpm_t Pjpm)
         }
         else { J__UDYSETALLOCERROR(PjllRaw); }
 
-        TRACE_ALLOC6("0x%x %8lu = j__udyAllocJLL4(%lu), Words = %lu\n", PjllRaw,
+        TRACE_ALLOC6("0x%x %8"PRIuPTR" = j__udyAllocJLL4(%"PRIuPTR"), Words = %"PRIuPTR"\n", PjllRaw,
                      j__udyMemSequence++, Pop1, Words, (Pjpm->jpm_Pop0) + 2);
         MALLOCBITS_SET(Pjll_t, PjllRaw);
         return(PjllRaw);
@@ -393,7 +393,7 @@ FUNCTION Pjll_t j__udyAllocJLL5(Word_t Pop1, Pjpm_t Pjpm)
         }
         else { J__UDYSETALLOCERROR(PjllRaw); }
 
-        TRACE_ALLOC6("0x%x %8lu = j__udyAllocJLL5(%lu), Words = %lu\n", PjllRaw,
+        TRACE_ALLOC6("0x%x %8"PRIuPTR" = j__udyAllocJLL5(%"PRIuPTR"), Words = %"PRIuPTR"\n", PjllRaw,
                      j__udyMemSequence++, Pop1, Words, (Pjpm->jpm_Pop0) + 2);
         MALLOCBITS_SET(Pjll_t, PjllRaw);
         return(PjllRaw);
@@ -414,7 +414,7 @@ FUNCTION Pjll_t j__udyAllocJLL6(Word_t Pop1, Pjpm_t Pjpm)
         }
         else { J__UDYSETALLOCERROR(PjllRaw); }
 
-        TRACE_ALLOC6("0x%x %8lu = j__udyAllocJLL6(%lu), Words = %lu\n", PjllRaw,
+        TRACE_ALLOC6("0x%x %8"PRIuPTR" = j__udyAllocJLL6(%"PRIuPTR"), Words = %"PRIuPTR"\n", PjllRaw,
                      j__udyMemSequence++, Pop1, Words, (Pjpm->jpm_Pop0) + 2);
         MALLOCBITS_SET(Pjll_t, PjllRaw);
         return(PjllRaw);
@@ -435,7 +435,7 @@ FUNCTION Pjll_t j__udyAllocJLL7(Word_t Pop1, Pjpm_t Pjpm)
         }
         else { J__UDYSETALLOCERROR(PjllRaw); }
 
-        TRACE_ALLOC6("0x%x %8lu = j__udyAllocJLL7(%lu), Words = %lu\n", PjllRaw,
+        TRACE_ALLOC6("0x%x %8"PRIuPTR" = j__udyAllocJLL7(%"PRIuPTR"), Words = %"PRIuPTR"\n", PjllRaw,
                      j__udyMemSequence++, Pop1, Words, (Pjpm->jpm_Pop0) + 2);
         MALLOCBITS_SET(Pjll_t, PjllRaw);
         return(PjllRaw);
@@ -455,7 +455,7 @@ FUNCTION Pjlw_t j__udyAllocJLW(Word_t Pop1)
         Word_t Words = JU_LEAFWPOPTOWORDS(Pop1);
         Pjlw_t Pjlw  = (Pjlw_t) MALLOC(JudyMalloc, Words, Words);
 
-        TRACE_ALLOC6("0x%x %8lu = j__udyAllocJLW(%lu), Words = %lu\n", Pjlw,
+        TRACE_ALLOC6("0x%x %8"PRIuPTR" = j__udyAllocJLW(%"PRIuPTR"), Words = %"PRIuPTR"\n", Pjlw,
                      j__udyMemSequence++, Pop1, Words, Pop1);
         // MALLOCBITS_SET(Pjlw_t, Pjlw);  // see above.
         return(Pjlw);
@@ -479,7 +479,7 @@ FUNCTION Pjlb_t j__udyAllocJLB1(Pjpm_t Pjpm)
         }
         else { J__UDYSETALLOCERROR(PjlbRaw); }
 
-        TRACE_ALLOC5("0x%x %8lu = j__udyAllocJLB1(), Words = %lu\n", PjlbRaw,
+        TRACE_ALLOC5("0x%x %8"PRIuPTR" = j__udyAllocJLB1(), Words = %"PRIuPTR"\n", PjlbRaw,
                      j__udyMemSequence++, Words, (Pjpm->jpm_Pop0) + 2);
         MALLOCBITS_SET(Pjlb_t, PjlbRaw);
         return(PjlbRaw);
@@ -502,7 +502,7 @@ FUNCTION Pjv_t j__udyLAllocJV(Word_t Pop1, Pjpm_t Pjpm)
         }
         else { J__UDYSETALLOCERROR(PjvRaw); }
 
-        TRACE_ALLOC6("0x%x %8lu = j__udyLAllocJV(%lu), Words = %lu\n", PjvRaw,
+        TRACE_ALLOC6("0x%x %8"PRIuPTR" = j__udyLAllocJV(%"PRIuPTR"), Words = %"PRIuPTR"\n", PjvRaw,
                      j__udyMemSequence++, Pop1, Words, (Pjpm->jpm_Pop0) + 2);
         MALLOCBITS_SET(Pjv_t, PjvRaw);
         return(PjvRaw);
@@ -536,7 +536,7 @@ FUNCTION void j__udyFreeJPM(Pjpm_t PjpmFree, Pjpm_t PjpmStats)
 // Judy*FreeArray(), jpm_Pop0 is set to 0, and the population after the free
 // really will be 0, not cJU_LEAFW_MAXPOP1.
 
-        TRACE_FREE6("0x%x %8lu =  j__udyFreeJPM(%lu), Words = %lu\n", PjpmFree,
+        TRACE_FREE6("0x%x %8"PRIuPTR" =  j__udyFreeJPM(%"PRIuPTR"), Words = %"PRIuPTR"\n", PjpmFree,
                     j__udyMemSequence++, Words, Words, PjpmFree->jpm_Pop0);
 
 
@@ -552,7 +552,7 @@ FUNCTION void j__udyFreeJBL(Pjbl_t Pjbl, Pjpm_t Pjpm)
 
         Pjpm->jpm_TotalMemWords -= Words;
 
-        TRACE_FREE5("0x%x %8lu =  j__udyFreeJBL(), Words = %lu\n", Pjbl,
+        TRACE_FREE5("0x%x %8"PRIuPTR" =  j__udyFreeJBL(), Words = %"PRIuPTR"\n", Pjbl,
                     j__udyMemSequence++, Words, Pjpm->jpm_Pop0);
 
 
@@ -568,7 +568,7 @@ FUNCTION void j__udyFreeJBB(Pjbb_t Pjbb, Pjpm_t Pjpm)
 
         Pjpm->jpm_TotalMemWords -= Words;
 
-        TRACE_FREE5("0x%x %8lu =  j__udyFreeJBB(), Words = %lu\n", Pjbb,
+        TRACE_FREE5("0x%x %8"PRIuPTR" =  j__udyFreeJBB(), Words = %"PRIuPTR"\n", Pjbb,
                     j__udyMemSequence++, Words, Pjpm->jpm_Pop0);
 
 
@@ -584,7 +584,7 @@ FUNCTION void j__udyFreeJBBJP(Pjp_t Pjp, Word_t NumJPs, Pjpm_t Pjpm)
 
         Pjpm->jpm_TotalMemWords -= Words;
 
-        TRACE_FREE6("0x%x %8lu =  j__udyFreeJBBJP(%lu), Words = %lu\n", Pjp,
+        TRACE_FREE6("0x%x %8"PRIuPTR" =  j__udyFreeJBBJP(%"PRIuPTR"), Words = %"PRIuPTR"\n", Pjp,
                     j__udyMemSequence++, NumJPs, Words, Pjpm->jpm_Pop0);
 
 
@@ -600,7 +600,7 @@ FUNCTION void j__udyFreeJBU(Pjbu_t Pjbu, Pjpm_t Pjpm)
 
         Pjpm->jpm_TotalMemWords -= Words;
 
-        TRACE_FREE5("0x%x %8lu =  j__udyFreeJBU(), Words = %lu\n", Pjbu,
+        TRACE_FREE5("0x%x %8"PRIuPTR" =  j__udyFreeJBU(), Words = %"PRIuPTR"\n", Pjbu,
                     j__udyMemSequence++, Words, Pjpm->jpm_Pop0);
 
 
@@ -618,7 +618,7 @@ FUNCTION void j__udyFreeJLL1(Pjll_t Pjll, Word_t Pop1, Pjpm_t Pjpm)
 
         Pjpm->jpm_TotalMemWords -= Words;
 
-        TRACE_FREE6("0x%x %8lu =  j__udyFreeJLL1(%lu), Words = %lu\n", Pjll,
+        TRACE_FREE6("0x%x %8"PRIuPTR" =  j__udyFreeJLL1(%"PRIuPTR"), Words = %"PRIuPTR"\n", Pjll,
                     j__udyMemSequence++, Pop1, Words, Pjpm->jpm_Pop0);
 
 
@@ -636,7 +636,7 @@ FUNCTION void j__udyFreeJLL2(Pjll_t Pjll, Word_t Pop1, Pjpm_t Pjpm)
 
         Pjpm->jpm_TotalMemWords -= Words;
 
-        TRACE_FREE6("0x%x %8lu =  j__udyFreeJLL2(%lu), Words = %lu\n", Pjll,
+        TRACE_FREE6("0x%x %8"PRIuPTR" =  j__udyFreeJLL2(%"PRIuPTR"), Words = %"PRIuPTR"\n", Pjll,
                     j__udyMemSequence++, Pop1, Words, Pjpm->jpm_Pop0);
 
 
@@ -652,7 +652,7 @@ FUNCTION void j__udyFreeJLL3(Pjll_t Pjll, Word_t Pop1, Pjpm_t Pjpm)
 
         Pjpm->jpm_TotalMemWords -= Words;
 
-        TRACE_FREE6("0x%x %8lu =  j__udyFreeJLL3(%lu), Words = %lu\n", Pjll,
+        TRACE_FREE6("0x%x %8"PRIuPTR" =  j__udyFreeJLL3(%"PRIuPTR"), Words = %"PRIuPTR"\n", Pjll,
                     j__udyMemSequence++, Pop1, Words, Pjpm->jpm_Pop0);
 
 
@@ -670,7 +670,7 @@ FUNCTION void j__udyFreeJLL4(Pjll_t Pjll, Word_t Pop1, Pjpm_t Pjpm)
 
         Pjpm->jpm_TotalMemWords -= Words;
 
-        TRACE_FREE6("0x%x %8lu =  j__udyFreeJLL4(%lu), Words = %lu\n", Pjll,
+        TRACE_FREE6("0x%x %8"PRIuPTR" =  j__udyFreeJLL4(%"PRIuPTR"), Words = %"PRIuPTR"\n", Pjll,
                     j__udyMemSequence++, Pop1, Words, Pjpm->jpm_Pop0);
 
 
@@ -686,7 +686,7 @@ FUNCTION void j__udyFreeJLL5(Pjll_t Pjll, Word_t Pop1, Pjpm_t Pjpm)
 
         Pjpm->jpm_TotalMemWords -= Words;
 
-        TRACE_FREE6("0x%x %8lu =  j__udyFreeJLL5(%lu), Words = %lu\n", Pjll,
+        TRACE_FREE6("0x%x %8"PRIuPTR" =  j__udyFreeJLL5(%"PRIuPTR"), Words = %"PRIuPTR"\n", Pjll,
                     j__udyMemSequence++, Pop1, Words, Pjpm->jpm_Pop0);
 
 
@@ -702,7 +702,7 @@ FUNCTION void j__udyFreeJLL6(Pjll_t Pjll, Word_t Pop1, Pjpm_t Pjpm)
 
         Pjpm->jpm_TotalMemWords -= Words;
 
-        TRACE_FREE6("0x%x %8lu =  j__udyFreeJLL6(%lu), Words = %lu\n", Pjll,
+        TRACE_FREE6("0x%x %8"PRIuPTR" =  j__udyFreeJLL6(%"PRIuPTR"), Words = %"PRIuPTR"\n", Pjll,
                     j__udyMemSequence++, Pop1, Words, Pjpm->jpm_Pop0);
 
 
@@ -718,7 +718,7 @@ FUNCTION void j__udyFreeJLL7(Pjll_t Pjll, Word_t Pop1, Pjpm_t Pjpm)
 
         Pjpm->jpm_TotalMemWords -= Words;
 
-        TRACE_FREE6("0x%x %8lu =  j__udyFreeJLL7(%lu), Words = %lu\n", Pjll,
+        TRACE_FREE6("0x%x %8"PRIuPTR" =  j__udyFreeJLL7(%"PRIuPTR"), Words = %"PRIuPTR"\n", Pjll,
                     j__udyMemSequence++, Pop1, Words, Pjpm->jpm_Pop0);
 
 
@@ -739,7 +739,7 @@ FUNCTION void j__udyFreeJLW(Pjlw_t Pjlw, Word_t Pop1, Pjpm_t Pjpm)
 
         if (Pjpm) Pjpm->jpm_TotalMemWords -= Words;
 
-        TRACE_FREE6("0x%x %8lu =  j__udyFreeJLW(%lu), Words = %lu\n", Pjlw,
+        TRACE_FREE6("0x%x %8"PRIuPTR" =  j__udyFreeJLW(%"PRIuPTR"), Words = %"PRIuPTR"\n", Pjlw,
                     j__udyMemSequence++, Pop1, Words, Pop1 - 1);
 
 
@@ -755,7 +755,7 @@ FUNCTION void j__udyFreeJLB1(Pjlb_t Pjlb, Pjpm_t Pjpm)
 
         Pjpm->jpm_TotalMemWords -= Words;
 
-        TRACE_FREE5("0x%x %8lu =  j__udyFreeJLB1(), Words = %lu\n", Pjlb,
+        TRACE_FREE5("0x%x %8"PRIuPTR" =  j__udyFreeJLB1(), Words = %"PRIuPTR"\n", Pjlb,
                     j__udyMemSequence++, Words, Pjpm->jpm_Pop0);
 
 
@@ -773,7 +773,7 @@ FUNCTION void j__udyLFreeJV(Pjv_t Pjv, Word_t Pop1, Pjpm_t Pjpm)
 
         Pjpm->jpm_TotalMemWords -= Words;
 
-        TRACE_FREE6("0x%x %8lu = j__udyLFreeJV(%lu), Words = %lu\n", Pjv,
+        TRACE_FREE6("0x%x %8"PRIuPTR" = j__udyLFreeJV(%"PRIuPTR"), Words = %"PRIuPTR"\n", Pjv,
                     j__udyMemSequence++, Pop1, Words, Pjpm->jpm_Pop0);
 
 

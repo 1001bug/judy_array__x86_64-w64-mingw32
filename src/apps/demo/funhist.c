@@ -7,7 +7,7 @@
 //
 // The program generates n random numbers, stores them in a JudyL array
 // and then prints a histogram.  All aspects of the generation and
-// histogram are timed so the user can see how long various JudyL functions
+// histogram are timed so the user can see how intptr_t various JudyL functions
 // take.
 //
 //
@@ -77,7 +77,7 @@ main(int argc, char **argv)
     Word_t    tmp1, tmp2;       // temporary variable
     double    random_gen_time;  // time to generate random numbers
     Word_t    histo_incr;       // histogram increment
-    unsigned long long ran_sum = 0; // sum of all generated randoms
+    uintptr_t ran_sum = 0; // sum of all generated randoms
 
 // TITLE
 
@@ -90,7 +90,7 @@ main(int argc, char **argv)
         // SET TO DEFAULT_ITER
         num_vals = DEFAULT_ITER;
         printf("Usage: %s [numvals]\n", argv[0]);
-        printf("  Since you did not specify a number of values, %ld\n",
+        printf("  Since you did not specify a number of values, %"PRIdPTR"\n",
                num_vals);
         printf("  will be used as the number of random numbers to insert\n");
         printf("  into the Judy array\n");
@@ -116,7 +116,7 @@ main(int argc, char **argv)
     }                           /* end of random number generator time */
     ENDTm;
     random_gen_time = DeltaUSec;
-    printf("It took %.3f sec to generate %ld random numbers\n",
+    printf("It took %.3f sec to generate %"PRIdPTR" random numbers\n",
            random_gen_time / 1000000, num_vals);
     printf("  (ie. %.3f uSec/number)\n\n", random_gen_time / num_vals);
 
@@ -146,7 +146,7 @@ main(int argc, char **argv)
 // IE. COUNT THE NUMBER OF UNIQUE RANDOM NUMBERS
 
     JLC(unique_nums, PJArray, 0, -1);
-    printf("\nThere were %ld unique random numbers generated\n", unique_nums);
+    printf("\nThere were %"PRIdPTR" unique random numbers generated\n", unique_nums);
 
 // FIND HOW MANY NUMBERS WERE GENERATED ONCE, TWICE, ...
 //
@@ -183,7 +183,7 @@ main(int argc, char **argv)
         JLF(PValue, PJCount, Index);
         while (PValue != (PWord_t)NULL)
         {
-            printf("  %ld numbers were generated %ld time%s\n",
+            printf("  %"PRIdPTR" numbers were generated %"PRIdPTR" time%s\n",
                    *PValue, Index, PLURAL(Index));
 
             JLN(PValue, PJCount, Index);
@@ -194,15 +194,15 @@ main(int argc, char **argv)
 
     printf("\nCompute the random number distribution by counting index ranges\n");
 
-    histo_incr = ((Word_t)~0L / DEFAULT_HISTO_BUCKETS) >> 1;
+    histo_incr = ((Word_t)~((Word_t)0) / DEFAULT_HISTO_BUCKETS) >> 1;
 
-    Index = 0L;
+    Index = ((Word_t)0);
     for (iter = 0; iter < DEFAULT_HISTO_BUCKETS; iter++)
     {
         Word_t    Count;
 
         JLC(Count, PJArray, Index, Index + histo_incr);
-        printf("  %ld unique values from 0x%08lx - 0x%08lx\n", Count,
+        printf("  %"PRIdPTR" unique values from 0x%08"PRIxPTR" - 0x%08"PRIxPTR"\n", Count,
                Index, Index + histo_incr);
 
         Index += histo_incr + 1;
@@ -214,7 +214,7 @@ main(int argc, char **argv)
 //       RANGE (low and high value)
 
     tmp1 = (Word_t)(ran_sum / (long long)num_vals);
-    printf("                  mean: 0x%lx\n", tmp1);
+    printf("                  mean: 0x%"PRIxPTR"\n", tmp1);
 
 // If there were an even number of randoms generated, then average
 // the two middle numbers.  Otherwise, the mean is the middle value
@@ -228,15 +228,15 @@ main(int argc, char **argv)
     {
         JLBC(PValue, PJArray, (num_vals + 1) / 2, median);
     }
-    printf("                median: 0x%lx\n", median);
+    printf("                median: 0x%"PRIxPTR"\n", median);
 
     Index = 0;
     JLF(PValue, PJArray, Index);
-    printf("first random generated: 0x%lx\n", Index);
+    printf("first random generated: 0x%"PRIxPTR"\n", Index);
 
     Index = ~0;
     JLL(PValue, PJArray, Index);
-    printf(" last random generated: 0x%lx\n", Index);
+    printf(" last random generated: 0x%"PRIxPTR"\n", Index);
 
     return (0);
 
